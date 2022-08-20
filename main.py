@@ -18,31 +18,32 @@ from streamlit_option_menu import option_menu
 import tensorflow as tf
 from keras.models import model_from_json, load_model
 from streamlit_webrtc import webrtc_streamer, RTCConfiguration
-import h5py
 import av
 import time
 from datetime import datetime
+path = os.getcwd()
+#ROOT_DIR
 #Setup Models
-#gender_json_file = open(os.path.join(ROOT_DIR ,'model_gen.json'),'r')
-#loaded_gender_model_json = gender_json_file.read()
-#gender_json_file.close()
-#gender_loaded_model = model_from_json(loaded_gender_model_json)
+gender_json_file = open(os.path.join(path ,'model_gen.json'),'r')
+loaded_gender_model_json = gender_json_file.read()
+gender_json_file.close()
+gender_loaded_model = model_from_json(loaded_gender_model_json)
 #load weights into gender model
-#gender_loaded_model.load_weights(os.path.join(ROOT_DIR ,"model_gen.h5"))
-#gender_loaded_model.compile(
-#    optimizer = 'adam',
-#    loss='binary_crossentropy',
-#    metrics=['binary_accuracy'],)
+gender_loaded_model.load_weights(os.path.join(path ,"model_gen.h5"))
+gender_loaded_model.compile(
+    optimizer = 'adam',
+    loss='binary_crossentropy',
+    metrics=['binary_accuracy'],)
 
 #load Age model
-age_predictor = load_predictor(os.path.join(ROOT_DIR))
+age_predictor = load_predictor(os.path.join(path))
 
 #Load Emotion model
-emotion_json_file = open(os.path.join(ROOT_DIR ,'emotion_model.json'),'r')
+emotion_json_file = open(os.path.join(path ,'emotion_model.json'),'r')
 loaded_emotion_model_json = emotion_json_file.read()
 emotion_json_file.close()
 emotion_loaded_model = model_from_json(loaded_emotion_model_json)
-emotion_loaded_model.load_weights(os.path.join(ROOT_DIR ,"emotion_weights.h5"))
+emotion_loaded_model.load_weights(os.path.join(path ,"emotion_weights.h5"))
 emotion_loaded_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001, decay=1e-6),
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
@@ -226,7 +227,7 @@ def main():
 # -------------Sidebar Section------------------------------------------------
 
     with st.sidebar:
-        st.image(os.path.join(ROOT_DIR, "side_image.jpeg"))
+        st.image(os.path.join(path, "side_image.jpeg"))
         selected = option_menu(None, ["Home", "Share your Feedback"] , icons=['house', 'search'], menu_icon="cast", default_index=1)
         #choice = st.sidebar.selectbox(label = " ",options = activities)
         choice = selected
