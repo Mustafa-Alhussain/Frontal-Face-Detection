@@ -25,14 +25,17 @@ from datetime import datetime
 path = os.getcwd()
 #ROOT_DIR
 #Setup Models
+st.cache(allow_output_mutation=True)
 gender_json_file = open(os.path.join(path ,"model_gen.json"),'r')
 loaded_gender_model_json = gender_json_file.read()
 gender_json_file.close()
 
+gender_model_weights = os.path.join(path ,"model_gen.h5")
+
 gender_loaded_model = model_from_json(loaded_gender_model_json)
 #load weights into gender model
 path = os.getcwd()
-gender_loaded_model.load_weights("model_gen.h5")
+gender_loaded_model.load_weights(gender_model_weights)
 gender_loaded_model.compile(
     optimizer = 'adam',
     loss='binary_crossentropy',
