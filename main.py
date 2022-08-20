@@ -21,30 +21,10 @@ from streamlit_webrtc import webrtc_streamer, RTCConfiguration
 import av
 import time
 from datetime import datetime
-
 path = os.getcwd()
 #ROOT_DIR
 #Setup Models
-
-#load Age model
-age_predictor = load_predictor(os.path.join(path))
-
-#Load Emotion model
-emotion_json_file = open(os.path.join(path ,'emotion_model.json'),'r')
-loaded_emotion_model_json = emotion_json_file.read()
-emotion_json_file.close()
-emotion_loaded_model = model_from_json(loaded_emotion_model_json)
-emotion_loaded_model.load_weights(os.path.join(path ,"emotion_weights.h5"))
-emotion_loaded_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001, decay=1e-6),
-                  loss='categorical_crossentropy',
-                  metrics=['accuracy'])
-emotion_ranges = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Suprise']
-# Importing the Haar Cascades classifier XML file.
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-
-
-
-gender_json_file = open(os.path.join(path ,'model_gen.json'),'r')
+gender_json_file = open(os.path.join(path ,"model_gen.json"),'r')
 loaded_gender_model_json = gender_json_file.read()
 gender_json_file.close()
 gender_loaded_model = model_from_json(loaded_gender_model_json)
@@ -55,7 +35,21 @@ gender_loaded_model.compile(
     loss='binary_crossentropy',
     metrics=['binary_accuracy'],)
 
+#load Age model
+age_predictor = load_predictor(os.path.join(path))
 
+#Load Emotion model
+emotion_json_file = open(os.path.join(path ,"emotion_model.json"),'r')
+loaded_emotion_model_json = emotion_json_file.read()
+emotion_json_file.close()
+emotion_loaded_model = model_from_json(loaded_emotion_model_json)
+emotion_loaded_model.load_weights(os.path.join(path ,"emotion_weights.h5"))
+emotion_loaded_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001, decay=1e-6),
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+emotion_ranges = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Suprise']
+# Importing the Haar Cascades classifier XML file.
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
 # Defining a function to shrink the detected face region by a scale for better prediction in the model.
 def shrink_face_roi(x, y, w, h, scale=0.9):
