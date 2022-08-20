@@ -21,19 +21,10 @@ from streamlit_webrtc import webrtc_streamer, RTCConfiguration
 import av
 import time
 from datetime import datetime
+
 path = os.getcwd()
 #ROOT_DIR
 #Setup Models
-gender_json_file = open(os.path.join(path ,'model_gen.json'),'r')
-loaded_gender_model_json = gender_json_file.read()
-gender_json_file.close()
-gender_loaded_model = model_from_json(loaded_gender_model_json)
-#load weights into gender model
-gender_loaded_model.load_weights(os.path.join(path ,"model_gen.h5"))
-gender_loaded_model.compile(
-    optimizer = 'adam',
-    loss='binary_crossentropy',
-    metrics=['binary_accuracy'],)
 
 #load Age model
 age_predictor = load_predictor(os.path.join(path))
@@ -50,6 +41,21 @@ emotion_loaded_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.
 emotion_ranges = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Suprise']
 # Importing the Haar Cascades classifier XML file.
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+
+
+
+gender_json_file = open(os.path.join(path ,'model_gen.json'),'r')
+loaded_gender_model_json = gender_json_file.read()
+gender_json_file.close()
+gender_loaded_model = model_from_json(loaded_gender_model_json)
+#load weights into gender model
+gender_loaded_model.load_weights(os.path.join(path ,"model_gen.h5"))
+gender_loaded_model.compile(
+    optimizer = 'adam',
+    loss='binary_crossentropy',
+    metrics=['binary_accuracy'],)
+
+
 
 # Defining a function to shrink the detected face region by a scale for better prediction in the model.
 def shrink_face_roi(x, y, w, h, scale=0.9):
