@@ -28,14 +28,11 @@ path = os.getcwd()
 st.cache(allow_output_mutation=True)
 
 #load Age model
-age_predictor = load_predictor(os.path.join(path))
 
 gender_json_file = open(os.path.join(path ,"model_gen.json"),'r')
 loaded_gender_model_json = gender_json_file.read()
 gender_json_file.close()
-
 gender_model_weights = os.path.join(path ,"model_gen.h5")
-
 gender_loaded_model = model_from_json(loaded_gender_model_json)
 #load weights into gender model
 path = os.getcwd()
