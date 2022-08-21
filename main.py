@@ -22,7 +22,8 @@ import h5py
 import av
 import time
 from datetime import datetime
-path = os.getcwd()
+path1 = os.getcwd()
+path = os.path.join(path1 ,"models")
 #ROOT_DIR
 #Setup Models
 st.cache(allow_output_mutation=True)
@@ -35,7 +36,6 @@ gender_json_file.close()
 gender_model_weights = os.path.join(path ,"model_gen.h5")
 gender_loaded_model = model_from_json(loaded_gender_model_json)
 #load weights into gender model
-path = os.getcwd()
 gender_loaded_model.load_weights(gender_model_weights)
 gender_loaded_model.compile(
     optimizer = 'adam',
@@ -234,7 +234,7 @@ def main():
 # -------------Sidebar Section------------------------------------------------
 
     with st.sidebar:
-        st.image(os.path.join(path, "side_image.jpeg"))
+        st.image(os.path.join(path1, "side_image.jpeg"))
         selected = option_menu(None, ["Home", "Share your Feedback"] , icons=['house', 'search'], menu_icon="cast", default_index=1)
         #choice = st.sidebar.selectbox(label = " ",options = activities)
         choice = selected
