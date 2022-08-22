@@ -30,13 +30,15 @@ st.cache(allow_output_mutation=True)
 
 #load Age model
 
-gender_json_file = open(os.path.join(path ,"model_gen.json"),'r')
-loaded_gender_model_json = gender_json_file.read()
-gender_json_file.close()
+#gender_json_file = open(os.path.join(path ,"model_gen.json"),'r')
+#loaded_gender_model_json = gender_json_file.read()
+#gender_json_file.close()
 gender_model_weights = os.path.join(path ,"model_gen.h5")
-gender_loaded_model = model_from_json(loaded_gender_model_json)
+#gender_loaded_model = model_from_json(loaded_gender_model_json)
 #load weights into gender model
-gender_loaded_model.load_weights(gender_model_weights)
+#gender_loaded_model.load_weights(gender_model_weights)
+
+gender_loaded_model = load_model(gender_model_weights)
 gender_loaded_model.compile(
     optimizer = 'adam',
     loss='binary_crossentropy',
@@ -46,11 +48,13 @@ gender_loaded_model.compile(
 age_predictor = load_predictor(os.path.join(path))
 
 #Load Emotion model
-emotion_json_file = open(os.path.join(path ,"emotion_model.json"),'r')
-loaded_emotion_model_json = emotion_json_file.read()
-emotion_json_file.close()
-emotion_loaded_model = model_from_json(loaded_emotion_model_json)
-emotion_loaded_model.load_weights(os.path.join(path ,"emotion_weights.h5"))
+#emotion_json_file = open(os.path.join(path ,"emotion_model.json"),'r')
+#loaded_emotion_model_json = emotion_json_file.read()
+#emotion_json_file.close()
+#emotion_loaded_model = model_from_json(loaded_emotion_model_json)
+#emotion_loaded_model.load_weights(os.path.join(path ,"emotion_weights.h5"))
+emotion_model_weights = os.path.join(path ,"emotion_model.h5")
+emotion_loaded_model = load_model(emotion_model_weights)
 emotion_loaded_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001, decay=1e-6),
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
