@@ -36,7 +36,7 @@ gender_json_file.close()
 gender_model_weights = os.path.join(path ,"model_gen.h5")
 gender_loaded_model = model_from_json(loaded_gender_model_json)
 #load weights into gender model
-gender_loaded_model.load_weights("model_gen.h5")
+gender_loaded_model.load_weights(gender_model_weights)
 gender_loaded_model.compile(
     optimizer = 'adam',
     loss='binary_crossentropy',
