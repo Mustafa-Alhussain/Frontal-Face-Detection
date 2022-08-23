@@ -56,6 +56,7 @@ def read_file(filenamex):
 
 filename1 = read_file("frontal-face-detection/model_gen.sav")
 #filename1 = os.path.join(path ,"model_gen.sav")
+<<<<<<< HEAD
 gender_loaded_model = pickle.load(open(filename1, 'rb'))
 
 filename2 = read_file("frontal-face-detection/emotion_model.sav")
@@ -64,6 +65,16 @@ emotion_loaded_model = pickle.load(open(filename2, 'rb'))
 
 filename3 = read_file("frontal-face-detection/age_model.sav")
 #filename3 = os.path.join(path ,"age_model.sav")
+=======
+
+filename2 = os.path.join(path ,"emotion_model.sav")
+emotion_loaded_model = pickle.load(open(filename2, 'rb'))
+
+filename1 = "models/model_gen.sav"
+gender_loaded_model = pickle.load(open(filename1, 'rb'))
+
+filename3 = os.path.join(path ,"age_model.sav")
+>>>>>>> 980e9ec6ca62402509cf67ff631842067e4892dd
 age_predictor = pickle.load(open(filename3, 'rb'))
 
 # -------------Test2------------------------------------------------
