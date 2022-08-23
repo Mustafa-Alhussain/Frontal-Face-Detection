@@ -44,15 +44,15 @@ with fs.open("frontal-face-detection/age_model.sav", 'rb') as f:
 
 #filename1 = read_file("frontal-face-detection/model_gen.sav")
 #filename1 = os.path.join(path ,"model_gen.sav")
-gender_loaded_model = pickle.load(open(filename1, 'rb'))
+gender_loaded_model = pickle.load(filename1)
 
 #filename2 = read_file("frontal-face-detection/emotion_model.sav")
 #filename2 = os.path.join(path ,"emotion_model.sav")
-emotion_loaded_model = pickle.load(open(filename2, 'rb'))
+emotion_loaded_model = pickle.load(filename2)
 
 #filename3 = read_file("frontal-face-detection/age_model.sav")
 #filename3 = os.path.join(path ,"age_model.sav")
-age_predictor = pickle.load(open(filename3, 'rb'))
+age_predictor = pickle.load(filename3)
 
 # -------------Edit------------------------------------------------
 
