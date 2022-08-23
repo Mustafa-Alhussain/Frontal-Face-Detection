@@ -32,7 +32,7 @@ st.cache(allow_output_mutation=True)
 
 # -------------Test1------------------------------------------------
 #filename1 = os.path.join(path ,"model_gen.sav")
-filename1 = "/app/frontal-face-detection/models/model_gen.sav"
+filename1 = "/mustafa-alhussain/frontal-face-detection/main/models/model_gen.sav"
 #filename1 = "models/model_gen.sav"
 gender_loaded_model = pickle.load(open(filename1, 'rb'))
 filename2 = os.path.join(path ,"emotion_model.sav")
