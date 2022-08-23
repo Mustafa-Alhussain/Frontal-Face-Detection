@@ -1,5 +1,6 @@
 av==9.2.0
 h5py==3.6.0
+joblib==1.1.0
 keras==2.9.0
 ktrain==0.31.7
 numpy==1.21.5

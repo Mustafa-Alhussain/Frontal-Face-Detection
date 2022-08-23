@@ -20,7 +20,9 @@ from keras.models import model_from_json, load_model
 from streamlit_webrtc import webrtc_streamer, RTCConfiguration
 import h5py
 import av
+import pickle
 import time
+import joblib
 from datetime import datetime
 path1 = os.getcwd()
 path = os.path.join(path1 ,"models")
@@ -28,24 +30,40 @@ path = os.path.join(path1 ,"models")
 #Setup Models
 st.cache(allow_output_mutation=True)
 
-#load Age model
+# -------------Test1------------------------------------------------
 
+filename1 = os.path.join(path ,"model_gen.sav")
+gender_loaded_model = pickle.load(open(filename1, 'rb'))
+filename2 = os.path.join(path ,"emotion_model.sav")
+emotion_loaded_model = pickle.load(open(filename2, 'rb'))
+filename3 = os.path.join(path ,"age_model.sav")
+age_predictor = pickle.load(open(filename3, 'rb'))
+
+# -------------Test2------------------------------------------------
+#filename1 = os.path.join(path ,"model_gen")
+#gender_loaded_model = joblib.load(filename1)
+#ilename2 = os.path.join(path ,"emotion_model")
+#motion_loaded_model = joblib.load(filename2)
+#filename3 = os.path.join(path ,"age_model")
+#age_predictor = joblib.load(filename3)
+
+# -------------Edit------------------------------------------------
+
+#load Age model
 #gender_json_file = open(os.path.join(path ,"model_gen.json"),'r')
 #loaded_gender_model_json = gender_json_file.read()
 #gender_json_file.close()
-gender_model_weights = os.path.join(path ,"model_gen.h5")
+#gender_model_weights = os.path.join(path ,"model_gen.h5")
 #gender_loaded_model = model_from_json(loaded_gender_model_json)
 #load weights into gender model
 #gender_loaded_model.load_weights(gender_model_weights)
-
-gender_loaded_model = load_model(gender_model_weights)
 gender_loaded_model.compile(
     optimizer = 'adam',
     loss='binary_crossentropy',
     metrics=['binary_accuracy'],)
 
 #load Age model
-age_predictor = load_predictor(os.path.join(path))
+#age_predictor = load_predictor(os.path.join(path))
 
 #Load Emotion model
 #emotion_json_file = open(os.path.join(path ,"emotion_model.json"),'r')
@@ -53,8 +71,9 @@ age_predictor = load_predictor(os.path.join(path))
 #emotion_json_file.close()
 #emotion_loaded_model = model_from_json(loaded_emotion_model_json)
 #emotion_loaded_model.load_weights(os.path.join(path ,"emotion_weights.h5"))
-emotion_model_weights = os.path.join(path ,"emotion_model.h5")
-emotion_loaded_model = load_model(emotion_model_weights)
+
+# -------------Edit------------------------------------------------
+
 emotion_loaded_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001, decay=1e-6),
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
