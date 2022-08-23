@@ -275,98 +275,60 @@ def add_feedback(date_submitted, Q1, Q2, Q3, Q4, Q5):
     conn.commit()
 
 
-def main():
-    # Set page configs. Get emoji names from WebFx
-    st.set_page_config(page_title="Real-time Face Detection", page_icon="./assets/faceman_cropped.png", layout="centered")
+# Set page configs. Get emoji names from WebFx
+st.set_page_config(page_title="Real-time Face Detection", page_icon="./assets/faceman_cropped.png", layout="centered")
 
 # -------------Header Section------------------------------------------------
 
-    title = '<p style="text-align: center;font-size: 40px;font-weight: 550; "> Realtime Face Detection</p>'
-    st.markdown(title, unsafe_allow_html=True)
+title = '<p style="text-align: center;font-size: 40px;font-weight: 550; "> Realtime Face Detection</p>'
+st.markdown(title, unsafe_allow_html=True)
 
 # -------------Sidebar Section------------------------------------------------
 
-    with st.sidebar:
-        st.image(os.path.join(path1, "side_image.jpeg"))
-        selected = option_menu(None, ["Home", "Share your Feedback"] , icons=['house', 'search'], menu_icon="cast", default_index=1)
-        #choice = st.sidebar.selectbox(label = " ",options = activities)
-        choice = selected
+with st.sidebar:
+    st.image(os.path.join(path1, "side_image.jpeg"))
+    selected = option_menu(None, ["Home", "Share your Feedback"] , icons=['house', 'search'], menu_icon="cast", default_index=1)
+    #choice = st.sidebar.selectbox(label = " ",options = activities)
+    choice = selected
 
 # -------------Home Section------------------------------------------------
 
-    if choice == "Home":
-        st.markdown(
-        "This website is designed to predict Age, Gender and Emotion using Realtime Face Detection"
-        " Detection. Please share your experience with us in **Share your Feedback section** for improvement.")
+if choice == "Home":
+    st.markdown(
+    "This website is designed to predict Age, Gender and Emotion using Realtime Face Detection"
+    " Detection. Please share your experience with us in **Share your Feedback section** for improvement.")
 
-        supported_modes = "<html> " \
+    supported_modes = "<html> " \
                       "<body><div> <b>Supported Face Detection Modes (Change modes from sidebar menu)</b>" \
                       "<ul><li>Image Upload</li><li>Webcam Image Capture</li><li>Webcam Video Realtime</li></ul>" \
                       "</div></body></html>"
-        st.markdown(supported_modes, unsafe_allow_html=True)
-        st.warning("NOTE : Click the arrow icon at Top-Left to open Sidebar menu. ")
-        with st.sidebar:
-            page = st.radio("Choose Face Detection Mode", ('Upload Image',  'Webcam Image Capture', 'Webcam Realtime'), index=0)
-            st.info("NOTE: quality of detection will depend on lights, Alignment & Distance to Camera.")
+    st.markdown(supported_modes, unsafe_allow_html=True)
+    st.warning("NOTE : Click the arrow icon at Top-Left to open Sidebar menu. ")
+    with st.sidebar:
+        page = st.radio("Choose Face Detection Mode", ('Upload Image',  'Webcam Image Capture', 'Webcam Realtime'), index=0)
+        st.info("NOTE: quality of detection will depend on lights, Alignment & Distance to Camera.")
 
     # About the programmer
-            st.markdown("## Made by **Mustafa Al Hussain**")
-            ("## Email: **Mustafa.alhussain97@gmail.com**")
-            ("[*Linkedin Page*](https://www.linkedin.com/in/mustafa-al-hussain-16026019a)")
-            # line break
+        st.markdown("## Made by **Mustafa Al Hussain**")
+        ("## Email: **Mustafa.alhussain97@gmail.com**")
+        ("[*Linkedin Page*](https://www.linkedin.com/in/mustafa-al-hussain-16026019a)")
+        # line break
 
-            st.markdown(" ")
-            st.markdown(" ")
-            st.markdown(" ")
+        st.markdown(" ")
+        st.markdown(" ")
+        st.markdown(" ")
 
 # -------------Upload Image Section------------------------------------------------
 
-        if page == "Upload Image":
+    if page == "Upload Image":
         
-            # You can specify more file types below if you want
-            image_file = st.file_uploader("Upload image", type=['jpeg', 'png', 'jpg', 'webp'])
-            if image_file is not None:
-                # Reading the image from filepath provided above and passing it through the age clasification method defined above.
-                image = Image.open(image_file)
-        
-                if st.button("Process"):
-                    img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-                    age_img , num_faces = classify_age(img)
-                    imageRGB = cv2.cvtColor(age_img, cv2.COLOR_BGR2RGB)
-                    img = Image.fromarray(imageRGB)
-                    st.image(img, use_column_width=True)
-                    if num_faces == 0:
-                        st.warning("No Face Detected in Image. Make sure your face is visible in the camera with proper lighting.")
-                    elif num_faces == 1:
-                        st.success(
-                            "Only 1 face detected inside the image. Try adjusting minimum object size if we missed anything.")
-                    else:
-                        st.success("Total of " + str(num_faces) + " faces detected inside the image. Try adjusting your position for better detection if we missed anything.")
-                    img = np.array(img)
-                    img = Image.fromarray(img)
-                    buffered = BytesIO()
-                    img.save(buffered, format="JPEG")
-                    # Creating columns to center button
-                    col1, col2, col3 = st.columns(3)
-                    with col1:
-                        pass
-                    with col3:
-                        pass
-                    with col2:
-                        st.download_button(
-                            label="Download image",
-                            data=buffered.getvalue(),
-                            file_name="output.png",
-                            mime="image/png")
-
-# -------------Webcam Image Capture Section------------------------------------------------
-
-        if page == "Webcam Image Capture":
-            st.info("NOTE : In order to use this mode, you need to give webcam access.")
-            img_file_buffer = st.camera_input("Capture an Image from Webcam", disabled=False, key=1,help="Make sure you have given webcam permission to the site")
-
-            if img_file_buffer is not None:
-                image = Image.open(img_file_buffer)
+        # You can specify more file types below if you want
+        image_file = st.file_uploader("Upload image", type=['jpeg', 'png', 'jpg', 'webp'])
+        if image_file is not None:
+            # Reading the image from filepath provided above and passing it through the age clasification method defined above.
+            image = Image.open(image_file)
+    
+            if st.button("Process"):
                 img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
                 age_img , num_faces = classify_age(img)
                 imageRGB = cv2.cvtColor(age_img, cv2.COLOR_BGR2RGB)
@@ -376,7 +338,7 @@ def main():
                     st.warning("No Face Detected in Image. Make sure your face is visible in the camera with proper lighting.")
                 elif num_faces == 1:
                     st.success(
-                        "Only 1 face detected inside the image. Try adjusting minimum object size if we missed anything.")
+                            "Only 1 face detected inside the image. Try adjusting minimum object size if we missed anything.")
                 else:
                     st.success("Total of " + str(num_faces) + " faces detected inside the image. Try adjusting your position for better detection if we missed anything.")
                 img = np.array(img)
@@ -396,63 +358,100 @@ def main():
                         file_name="output.png",
                         mime="image/png")
 
+# -------------Webcam Image Capture Section------------------------------------------------
+
+    if page == "Webcam Image Capture":
+        st.info("NOTE : In order to use this mode, you need to give webcam access.")
+        img_file_buffer = st.camera_input("Capture an Image from Webcam", disabled=False, key=1,help="Make sure you have given webcam permission to the site")
+
+        if img_file_buffer is not None:
+            image = Image.open(img_file_buffer)
+            img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+            age_img , num_faces = classify_age(img)
+            imageRGB = cv2.cvtColor(age_img, cv2.COLOR_BGR2RGB)
+            img = Image.fromarray(imageRGB)
+            st.image(img, use_column_width=True)
+            if num_faces == 0:
+                st.warning("No Face Detected in Image. Make sure your face is visible in the camera with proper lighting.")
+            elif num_faces == 1:
+                st.success(
+                        "Only 1 face detected inside the image. Try adjusting minimum object size if we missed anything.")
+            else:
+                st.success("Total of " + str(num_faces) + " faces detected inside the image. Try adjusting your position for better detection if we missed anything.")
+            img = np.array(img)
+            img = Image.fromarray(img)
+            buffered = BytesIO()
+            img.save(buffered, format="JPEG")
+            # Creating columns to center button
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                pass
+            with col3:
+                pass
+            with col2:
+                st.download_button(
+                    label="Download image",
+                    data=buffered.getvalue(),
+                    file_name="output.png",
+                    mime="image/png")
+
 # -------------Webcam Realtime Section------------------------------------------------
 
 
-        if page == "Webcam Realtime":
-            st.warning("NOTE : In order to use this mode, you need to give webcam access. "
+    if page == "Webcam Realtime":
+        st.warning("NOTE : In order to use this mode, you need to give webcam access. "
                "After clicking 'Start' , it takes about 10-20 seconds to ready the webcam.")
 
-            spinner_message = "Wait a sec, getting some things done..."
+        spinner_message = "Wait a sec, getting some things done..."
 
-            with st.spinner(spinner_message):
+        with st.spinner(spinner_message):
 
-                class VideoProcessor:
+            class VideoProcessor:
 
-                    def recv(self, frame):
-                        # convert to numpy array
-                        frame = frame.to_ndarray(format="bgr24")
-                        age_frame , num_faces = classify_age(frame)
-                        frame = av.VideoFrame.from_ndarray(age_frame, format="bgr24")
-                        if num_faces == 0:
-                            st.warning("No Face Detected in Image. Make sure your face is visible in the camera with proper lighting.")
-                        elif num_faces == 1:
-                            st.success(
+                def recv(self, frame):
+                    # convert to numpy array
+                    frame = frame.to_ndarray(format="bgr24")
+                    age_frame , num_faces = classify_age(frame)
+                    frame = av.VideoFrame.from_ndarray(age_frame, format="bgr24")
+                    if num_faces == 0:
+                        st.warning("No Face Detected in Image. Make sure your face is visible in the camera with proper lighting.")
+                    elif num_faces == 1:
+                        st.success(
                                 "Only 1 face detected inside the image. Try adjusting minimum object size if we missed anything.")
-                        else:
-                            st.success("Total of " + str(num_faces) + " faces detected inside the image. Try adjusting your position for better detection if we missed anything.")
+                    else:
+                        st.success("Total of " + str(num_faces) + " faces detected inside the image. Try adjusting your position for better detection if we missed anything.")
 
-                        return frame
+                    return frame
 
-            webrtc_streamer(key="key", video_processor_factory=VideoProcessor,
-                            rtc_configuration=RTCConfiguration(
-                                {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}))
+        webrtc_streamer(key="key", video_processor_factory=VideoProcessor,
+                        rtc_configuration=RTCConfiguration(
+                            {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}))
 
 # -------------Share your Feedback Section------------------------------------------------
 
-    elif choice == "Share your Feedback":
-        st.title("Feedback")
+elif choice == "Share your Feedback":
+    st.title("Feedback")
 
-        d = st.date_input("Today's date",None, None, None, None)
+    d = st.date_input("Today's date",None, None, None, None)
         
-        question_1 = st.selectbox('Which mode have you tried?',('' ,'Upload Image', 'Webcam Image Capture', 'Webcam Realtime' ,'All'))
-        st.write('You selected:', question_1)
+    question_1 = st.selectbox('Which mode have you tried?',('' ,'Upload Image', 'Webcam Image Capture', 'Webcam Realtime' ,'All'))
+    st.write('You selected:', question_1)
         
-        question_2 = st.slider('How was the overall experience? (10 being very good and 1 being very dissapointed) ', 1, 1,10)
-        st.write('You selected:', question_2) 
+    question_2 = st.slider('How was the overall experience? (10 being very good and 1 being very dissapointed) ', 1, 1,10)
+    st.write('You selected:', question_2) 
 
-        question_3 = st.selectbox('Was the website fun and interactive?',('','Yes', 'No'))
-        st.write('You selected:', question_3)
+    question_3 = st.selectbox('Was the website fun and interactive?',('','Yes', 'No'))
+    st.write('You selected:', question_3)
 
-        question_4 = st.selectbox('Do you have a similar experience of what you tried?',('','Yes', 'No'))
-        st.write('You selected:', question_4)
+    question_4 = st.selectbox('Do you have a similar experience of what you tried?',('','Yes', 'No'))
+    st.write('You selected:', question_4)
 
-        question_5 = st.text_input('What could have been better?', max_chars=200)
+    question_5 = st.text_input('What could have been better?', max_chars=200)
 
-        if st.button("Submit feedback"):
-            create_table()
-            add_feedback(d, question_1, question_2, question_3, question_4, question_5)
-            st.success("Feedback submitted")
+    if st.button("Submit feedback"):
+        create_table()
+        add_feedback(d, question_1, question_2, question_3, question_4, question_5)
+        st.success("Feedback submitted")
         # lines I added to display your table
         
 
@@ -463,8 +462,8 @@ def main():
 
 
     # About the programmer
-        with st.sidebar:
-            st.markdown("## Made by **Mustafa Al Hussain**")
+    with st.sidebar:
+        st.markdown("## Made by **Mustafa Al Hussain**")
             ("## Email: **Mustafa.alhussain97@gmail.com**")
             ("[**Linkedin Page**](https://www.linkedin.com/in/mustafa-al-hussain-16026019a)")
 
@@ -475,12 +474,10 @@ def main():
 
 # -------------Hide Streamlit Watermark------------------------------------------------
 
-    hide_streamlit_style = """
+hide_streamlit_style = """
             <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             </style>
             """
-    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
-main()
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
