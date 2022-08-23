@@ -31,7 +31,6 @@ path = os.path.join(path1 ,"models")
 st.cache(allow_output_mutation=True)
 
 # -------------Test1------------------------------------------------
-/app/frontal-face-detection/
 #filename1 = os.path.join(path ,"model_gen.sav")
 filename1 = "/app/frontal-face-detection/models/model_gen.sav"
 #filename1 = "models/model_gen.sav"
