@@ -39,16 +39,33 @@ def read_file(filenamex):
     with fs.open(filenamex) as f:
         return f.read().decode("utf-8")
 
+content = read_file("frontal-face-detection/myfile.csv")
 
-filename1 = read_file("frontal-face-detection/model_gen.sav")
+print(content)
+print("hey")
+print("hey")
+print("hey")
+print("hey")
+print("hey")
+print("hey")
+print("hey")
+print("hey")
+print("hey")
+
+# Print results.
+for line in content.strip().split("\n"):
+    name, pet = line.split(",")
+    st.write(f"{name} has a :{pet}:")
+
+#filename1 = read_file("frontal-face-detection/model_gen.sav")
 #filename1 = os.path.join(path ,"model_gen.sav")
-gender_loaded_model = pickle.load(open(filename1, 'rb'))
+#gender_loaded_model = pickle.load(open(filename1, 'rb'))
 
-filename2 = read_file("frontal-face-detection/emotion_model.sav")
+#filename2 = read_file("frontal-face-detection/emotion_model.sav")
 #filename2 = os.path.join(path ,"emotion_model.sav")
-emotion_loaded_model = pickle.load(open(filename2, 'rb'))
+#emotion_loaded_model = pickle.load(open(filename2, 'rb'))
 
-filename3 = read_file("frontal-face-detection/age_model.sav")
+#filename3 = read_file("frontal-face-detection/age_model.sav")
 #filename3 = os.path.join(path ,"age_model.sav")
 
 # -------------Edit------------------------------------------------
