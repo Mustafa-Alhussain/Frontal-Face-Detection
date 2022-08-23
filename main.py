@@ -32,18 +32,7 @@ st.cache(allow_output_mutation=True)
 
 fs = s3fs.S3FileSystem(anon=False)
 
-@st.experimental_memo(ttl=600)
-def read_file(filename):
-    with fs.open(filename) as f:
-        return f.read().decode("utf-8")
-
-content = read_file("frontal-face-detection/myfile.csv")
-
-# Print results.
-for line in content.strip().split("\n"):
-    name, pet = line.split(",")
-    st.write(f"{name} has a :{pet}:")
-
+#@st.experimental_memo(ttl=600)
 
 with fs.open("frontal-face-detection/model_gen.sav", 'rb') as f:
     gender_loaded_model = pickle.load(f)
