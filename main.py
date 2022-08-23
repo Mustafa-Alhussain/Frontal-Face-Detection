@@ -4,7 +4,6 @@ import re
 from io import BytesIO
 import ktrain
 import os
-from config.definitions import ROOT_DIR
 import pandas as pd
 import cv2
 import s3fs
@@ -23,24 +22,19 @@ import h5py
 import av
 import pickle
 import time
-import joblib
-from urllib.request import urlopen
 from datetime import datetime
-import boto3
 path1 = os.getcwd()
 path = os.path.join(path1 ,"models")
-
-
-#ROOT_DIR
 #Setup Models
 st.cache(allow_output_mutation=True)
 # -------------Test1------------------------------------------------
 
-fs = s3fs.S3FileSystem(anon=False)
 
 # Retrieve file contents.
 # Uses st.experimental_memo to only rerun when the query changes or after 10 min.
-#@st.experimental_memo(ttl=600)
+
+fs = s3fs.S3FileSystem(anon=False)
+@st.experimental_memo(ttl=600)
 def read_file(filenamex):
     with fs.open(filenamex) as f:
         return f.read().decode("utf-8")
@@ -56,16 +50,6 @@ emotion_loaded_model = pickle.load(open(filename2, 'rb'))
 
 filename3 = read_file("frontal-face-detection/age_model.sav")
 #filename3 = os.path.join(path ,"age_model.sav")
-
-# -------------Test2------------------------------------------------
-#filename1 = os.path.join(path ,"model_gen")
-#gender_loaded_model = joblib.load(filename1)
-
-#filename2 = os.path.join(path ,"emotion_model")
-#emotion_loaded_model = joblib.load(filename2)
-
-#filename3 = os.path.join(path ,"age_model")
-#age_predictor = joblib.load(filename3)
 
 # -------------Edit------------------------------------------------
 
