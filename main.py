@@ -99,7 +99,7 @@ emotion_ranges = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Supris
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
 # Defining a function to shrink the detected face region by a scale for better prediction in the model.
-@st.cache
+
 
 def shrink_face_roi(x, y, w, h, scale=0.9):
     wh_multiplier = (1-scale)/2
@@ -110,7 +110,7 @@ def shrink_face_roi(x, y, w, h, scale=0.9):
     return (x_new, y_new, w_new, h_new)
 
 # Defining a function to create the predicted age overlay on the image by centering the text.
-@st.cache
+
 
 def create_age_text(img, text, pct_text, emotion_text ,  x, y, w, h):
 
@@ -147,7 +147,6 @@ def create_age_text(img, text, pct_text, emotion_text ,  x, y, w, h):
     return (face_age_background, face_age_text, yrsold_text)
 
 # Defining a function to find faces in an image and then classify each found face into three models ranges defined above.
-@st.cache
 
 def classify_age(img):
     # Making a copy of the image for overlay of ages and making a grayscale copy for passing to the loaded model for age classification.
@@ -221,7 +220,7 @@ def classify_age(img):
 
     return img_copy , num_faces
 
-@st.cache
+
 
 def change_res(cap, width, height):
     cap.set(3, width)
@@ -237,7 +236,7 @@ STD_DIMENSIONS =  {
     "720p": (1280, 720),
     "1080p": (1920, 1080),
     "4k": (3840, 2160),}
-@st.cache
+
 
 def get_dims(cap, res= my_res):
     width, height = STD_DIMENSIONS["480p"]
@@ -254,7 +253,7 @@ VIDEO_TYPE = {
     'avi': cv2.VideoWriter_fourcc(*'MP4V'),
     #'mp4': cv2.VideoWriter_fourcc(*'H264'),
     'mp4': cv2.VideoWriter_fourcc(*'MP4V'),}
-@st.cache
+
 
 def get_video_type(filename):
     filename, ext = os.path.splitext(filename)
@@ -265,16 +264,16 @@ def get_video_type(filename):
 conn = sqlite3.connect('feedback.db')
 c = conn.cursor()
 
-@st.cache
+
 
 def create_table():
     c.execute('CREATE TABLE IF NOT EXISTS feedback(date_submitted DATE, Q1 TEXT, Q2 INTEGER, Q3 INTEGER, Q4 TEXT, Q5 TEXT)')
-@st.cache
+
 
 def add_feedback(date_submitted, Q1, Q2, Q3, Q4, Q5):
     c.execute('INSERT INTO feedback (date_submitted,Q1, Q2, Q3, Q4, Q5) VALUES (?,?,?,?,?,?)',(date_submitted,Q1, Q2, Q3, Q4, Q5))
     conn.commit()
-@st.cache
+
 
 def main():
     # Set page configs. Get emoji names from WebFx
