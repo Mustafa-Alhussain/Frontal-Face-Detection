@@ -7,6 +7,7 @@ import os
 from config.definitions import ROOT_DIR
 import pandas as pd
 import cv2
+import s3fs
 import sqlite3
 import numpy as np
 from PIL import Image
@@ -23,27 +24,55 @@ import av
 import pickle
 import time
 import joblib
+from urllib.request import urlopen
 from datetime import datetime
+import boto3
 path1 = os.getcwd()
 path = os.path.join(path1 ,"models")
+
+#s3 = boto3.resource(
+#    service_name='s3',
+#    aws_access_key_id="AKIAX4Q7UGD535R26MIB",
+#    aws_secret_access_key="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",
+#)
+#obj = s3.Bucket('rontal-face-detection').Object('myfile.csv').get()
+#print(obj)
+
+
 #ROOT_DIR
 #Setup Models
 st.cache(allow_output_mutation=True)
-
 # -------------Test1------------------------------------------------
+
+fs = s3fs.S3FileSystem(anon=False)
+
+# Retrieve file contents.
+# Uses st.experimental_memo to only rerun when the query changes or after 10 min.
+#@st.experimental_memo(ttl=600)
+def read_file(filenamex):
+    with fs.open(filenamex) as f:
+        return f.read().decode("utf-8")
+
+
+filename1 = read_file("frontal-face-detection/model_gen.sav")
 #filename1 = os.path.join(path ,"model_gen.sav")
-filename1 = "models/model_gen.sav"
 gender_loaded_model = pickle.load(open(filename1, 'rb'))
-filename2 = os.path.join(path ,"emotion_model.sav")
+
+filename2 = read_file("frontal-face-detection/emotion_model.sav")
+#filename2 = os.path.join(path ,"emotion_model.sav")
 emotion_loaded_model = pickle.load(open(filename2, 'rb'))
-filename3 = os.path.join(path ,"age_model.sav")
+
+filename3 = read_file("frontal-face-detection/age_model.sav")
+#filename3 = os.path.join(path ,"age_model.sav")
 age_predictor = pickle.load(open(filename3, 'rb'))
 
 # -------------Test2------------------------------------------------
 #filename1 = os.path.join(path ,"model_gen")
 #gender_loaded_model = joblib.load(filename1)
-#ilename2 = os.path.join(path ,"emotion_model")
-#motion_loaded_model = joblib.load(filename2)
+
+#filename2 = os.path.join(path ,"emotion_model")
+#emotion_loaded_model = joblib.load(filename2)
+
 #filename3 = os.path.join(path ,"age_model")
 #age_predictor = joblib.load(filename3)
 
@@ -82,6 +111,8 @@ emotion_ranges = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Supris
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
 # Defining a function to shrink the detected face region by a scale for better prediction in the model.
+@st.cache
+
 def shrink_face_roi(x, y, w, h, scale=0.9):
     wh_multiplier = (1-scale)/2
     x_new = int(x + (w * wh_multiplier))
@@ -91,6 +122,8 @@ def shrink_face_roi(x, y, w, h, scale=0.9):
     return (x_new, y_new, w_new, h_new)
 
 # Defining a function to create the predicted age overlay on the image by centering the text.
+@st.cache
+
 def create_age_text(img, text, pct_text, emotion_text ,  x, y, w, h):
 
     # Defining font, scales and thickness.
@@ -126,6 +159,8 @@ def create_age_text(img, text, pct_text, emotion_text ,  x, y, w, h):
     return (face_age_background, face_age_text, yrsold_text)
 
 # Defining a function to find faces in an image and then classify each found face into three models ranges defined above.
+@st.cache
+
 def classify_age(img):
     # Making a copy of the image for overlay of ages and making a grayscale copy for passing to the loaded model for age classification.
     img_copy = np.copy(img)
@@ -198,6 +233,8 @@ def classify_age(img):
 
     return img_copy , num_faces
 
+@st.cache
+
 def change_res(cap, width, height):
     cap.set(3, width)
     cap.set(4, height)
@@ -212,6 +249,7 @@ STD_DIMENSIONS =  {
     "720p": (1280, 720),
     "1080p": (1920, 1080),
     "4k": (3840, 2160),}
+@st.cache
 
 def get_dims(cap, res= my_res):
     width, height = STD_DIMENSIONS["480p"]
@@ -228,6 +266,7 @@ VIDEO_TYPE = {
     'avi': cv2.VideoWriter_fourcc(*'MP4V'),
     #'mp4': cv2.VideoWriter_fourcc(*'H264'),
     'mp4': cv2.VideoWriter_fourcc(*'MP4V'),}
+@st.cache
 
 def get_video_type(filename):
     filename, ext = os.path.splitext(filename)
@@ -237,13 +276,17 @@ def get_video_type(filename):
 
 conn = sqlite3.connect('feedback.db')
 c = conn.cursor()
-    
+
+@st.cache
+
 def create_table():
     c.execute('CREATE TABLE IF NOT EXISTS feedback(date_submitted DATE, Q1 TEXT, Q2 INTEGER, Q3 INTEGER, Q4 TEXT, Q5 TEXT)')
+@st.cache
 
 def add_feedback(date_submitted, Q1, Q2, Q3, Q4, Q5):
     c.execute('INSERT INTO feedback (date_submitted,Q1, Q2, Q3, Q4, Q5) VALUES (?,?,?,?,?,?)',(date_submitted,Q1, Q2, Q3, Q4, Q5))
     conn.commit()
+@st.cache
 
 def main():
     # Set page configs. Get emoji names from WebFx
