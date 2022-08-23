@@ -30,10 +30,20 @@ st.cache(allow_output_mutation=True)
 # -------------Test1------------------------------------------------
 
 
-# Retrieve file contents.
-# Uses st.experimental_memo to only rerun when the query changes or after 10 min.
-
 fs = s3fs.S3FileSystem(anon=False)
+
+@st.experimental_memo(ttl=600)
+def read_file(filename):
+    with fs.open(filename) as f:
+        return f.read().decode("utf-8")
+
+content = read_file("frontal-face-detection/myfile.csv")
+
+# Print results.
+for line in content.strip().split("\n"):
+    name, pet = line.split(",")
+    st.write(f"{name} has a :{pet}:")
+
 
 with fs.open("frontal-face-detection/model_gen.sav", 'rb') as f:
     filename1 = f.read()
@@ -44,15 +54,15 @@ with fs.open("frontal-face-detection/age_model.sav", 'rb') as f:
 
 #filename1 = read_file("frontal-face-detection/model_gen.sav")
 #filename1 = os.path.join(path ,"model_gen.sav")
-gender_loaded_model = pickle.load(filename1)
+gender_loaded_model = pickle.load(open(filename1, 'rb'))
 
 #filename2 = read_file("frontal-face-detection/emotion_model.sav")
 #filename2 = os.path.join(path ,"emotion_model.sav")
-emotion_loaded_model = pickle.load(filename2)
+emotion_loaded_model = pickle.load(open(filename2, 'rb'))
 
 #filename3 = read_file("frontal-face-detection/age_model.sav")
 #filename3 = os.path.join(path ,"age_model.sav")
-age_predictor = pickle.load(filename3)
+age_predictor = pickle.load(open(filename3, 'rb'))
 
 # -------------Edit------------------------------------------------
 
