@@ -464,8 +464,8 @@ elif choice == "Share your Feedback":
     # About the programmer
     with st.sidebar:
         st.markdown("## Made by **Mustafa Al Hussain**")
-            ("## Email: **Mustafa.alhussain97@gmail.com**")
-            ("[**Linkedin Page**](https://www.linkedin.com/in/mustafa-al-hussain-16026019a)")
+        ("## Email: **Mustafa.alhussain97@gmail.com**")
+        ("[**Linkedin Page**](https://www.linkedin.com/in/mustafa-al-hussain-16026019a)")
 
 # -------------About - Contact us Section------------------------------------------------
 
