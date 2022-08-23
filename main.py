@@ -46,7 +46,7 @@ for line in content.strip().split("\n"):
 
 
 with fs.open("frontal-face-detection/model_gen.sav", 'rb') as f:
-    filename1 = f.read()
+    gender_loaded_model = pickle.load(f)
 with fs.open("frontal-face-detection/emotion_model.sav", 'rb') as f:
     filename2 = f.read()
 with fs.open("frontal-face-detection/age_model.sav", 'rb') as f:
