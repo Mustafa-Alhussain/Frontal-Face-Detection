@@ -32,10 +32,13 @@ st.cache(allow_output_mutation=True)
 
 # -------------Test1------------------------------------------------
 #filename1 = os.path.join(path ,"model_gen.sav")
-filename1 = "models/model_gen.sav"
-gender_loaded_model = pickle.load(open(filename1, 'rb'))
+
 filename2 = os.path.join(path ,"emotion_model.sav")
 emotion_loaded_model = pickle.load(open(filename2, 'rb'))
+
+filename1 = "models/model_gen.sav"
+gender_loaded_model = pickle.load(open(filename1, 'rb'))
+
 filename3 = os.path.join(path ,"age_model.sav")
 age_predictor = pickle.load(open(filename3, 'rb'))
 
