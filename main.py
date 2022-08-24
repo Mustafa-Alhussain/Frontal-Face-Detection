@@ -27,12 +27,11 @@ path1 = os.getcwd()
 path = os.path.join(path1 ,"models")
 #Setup Models
 st.cache(allow_output_mutation=True)
-# -------------Test1------------------------------------------------
+# -------------models loading------------------------------------------------
 
 
 fs = s3fs.S3FileSystem(anon=False)
-
-#@st.experimental_memo(ttl=600)
+@st.experimental_memo(ttl=600000)
 
 with fs.open("frontal-face-detection/model_gen.sav", 'rb') as f:
     gender_loaded_model = pickle.load(f)
@@ -41,44 +40,10 @@ with fs.open("frontal-face-detection/emotion_model.sav", 'rb') as f:
 with fs.open("frontal-face-detection/age_model.sav", 'rb') as f:
     age_predictor = pickle.load(f)
 
-#filename1 = read_file("frontal-face-detection/model_gen.sav")
-#filename1 = os.path.join(path ,"model_gen.sav")
-#gender_loaded_model = pickle.load(open(filename1, 'rb'))
-
-#filename2 = read_file("frontal-face-detection/emotion_model.sav")
-#filename2 = os.path.join(path ,"emotion_model.sav")
-#emotion_loaded_model = pickle.load(open(filename2, 'rb'))
-
-#filename3 = read_file("frontal-face-detection/age_model.sav")
-#filename3 = os.path.join(path ,"age_model.sav")
-#age_predictor = pickle.load(open(filename3, 'rb'))
-
-# -------------Edit------------------------------------------------
-
-#load Age model
-#gender_json_file = open(os.path.join(path ,"model_gen.json"),'r')
-#loaded_gender_model_json = gender_json_file.read()
-#gender_json_file.close()
-#gender_model_weights = os.path.join(path ,"model_gen.h5")
-#gender_loaded_model = model_from_json(loaded_gender_model_json)
-#load weights into gender model
-#gender_loaded_model.load_weights(gender_model_weights)
 gender_loaded_model.compile(
     optimizer = 'adam',
     loss='binary_crossentropy',
     metrics=['binary_accuracy'],)
-
-#load Age model
-#age_predictor = load_predictor(os.path.join(path))
-
-#Load Emotion model
-#emotion_json_file = open(os.path.join(path ,"emotion_model.json"),'r')
-#loaded_emotion_model_json = emotion_json_file.read()
-#emotion_json_file.close()
-#emotion_loaded_model = model_from_json(loaded_emotion_model_json)
-#emotion_loaded_model.load_weights(os.path.join(path ,"emotion_weights.h5"))
-
-# -------------Edit------------------------------------------------
 
 emotion_loaded_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001, decay=1e-6),
                   loss='categorical_crossentropy',
@@ -86,6 +51,10 @@ emotion_loaded_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.
 emotion_ranges = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Suprise']
 # Importing the Haar Cascades classifier XML file.
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+
+
+# -------------Function to Detect Faces------------------------------------------------
+
 
 # Defining a function to shrink the detected face region by a scale for better prediction in the model.
 
@@ -276,8 +245,7 @@ st.markdown(title, unsafe_allow_html=True)
 
 with st.sidebar:
     st.image(os.path.join(path1, "side_image.jpeg"))
-    selected = option_menu(None, ["Home", "Share your Feedback"] , icons=['house', 'search'], menu_icon="cast", default_index=1)
-    #choice = st.sidebar.selectbox(label = " ",options = activities)
+    selected = option_menu(None, ["Home", "Share your Feedback"] , icons=['house', 'search'], menu_icon="cast")
     choice = selected
 
 # -------------Home Section------------------------------------------------
@@ -441,25 +409,12 @@ elif choice == "Share your Feedback":
         create_table()
         add_feedback(d, question_1, question_2, question_3, question_4, question_5)
         st.success("Feedback submitted")
-        # lines I added to display your table
-        
-
-        #query = pd.read_sql_query('''
-        #select * from feedback''', conn)
-        #data = pd.DataFrame(query)
-        #st.write(data)
-
 
     # About the programmer
     with st.sidebar:
         st.markdown("## Made by **Mustafa Al Hussain**")
         ("## Email: **Mustafa.alhussain97@gmail.com**")
         ("[**Linkedin Page**](https://www.linkedin.com/in/mustafa-al-hussain-16026019a)")
-
-# -------------About - Contact us Section------------------------------------------------
-
-    #else:
-    #    pass
 
 # -------------Hide Streamlit Watermark------------------------------------------------
 
