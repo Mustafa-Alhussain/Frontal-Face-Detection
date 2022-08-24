@@ -37,7 +37,7 @@ filename_age = "frontal-face-detection/age_model.sav"
 
 # -------------models loading------------------------------------------------
 
-@st.cache(allow_output_mutation=True , ttl = 600)
+@st.cache(allow_output_mutation=True , ttl = 900)
 def load_model(model_name):
     with fs.open(model_name , "rb") as f:
         loaded_model = pickle.load(f)
