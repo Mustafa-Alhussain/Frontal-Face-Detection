@@ -31,7 +31,6 @@ st.cache(allow_output_mutation=True)
 
 
 fs = s3fs.S3FileSystem(anon=False)
-@st.experimental_memo(ttl=600000)
 
 with fs.open("frontal-face-detection/model_gen.sav", 'rb') as f:
     gender_loaded_model = pickle.load(f)
