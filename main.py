@@ -18,26 +18,34 @@ from streamlit_option_menu import option_menu
 import tensorflow as tf
 from keras.models import model_from_json, load_model
 from streamlit_webrtc import webrtc_streamer, RTCConfiguration
-import h5py
 import av
 import pickle
 import time
 from datetime import datetime
+
+# -------------General Setup------------------------------------------------
+
+# Set page configs. Get emoji names from WebFx
+st.set_page_config(page_title="Real-time Face Detection", page_icon="./assets/faceman_cropped.png", layout="centered")
+fs = s3fs.S3FileSystem(anon=False)
+#Define Directory for models
 path1 = os.getcwd()
 path = os.path.join(path1 ,"models")
-#Setup Models
-st.cache(allow_output_mutation=True)
+filename_gender = "frontal-face-detection/model_gen.sav"
+filename_emotion = "frontal-face-detection/emotion_model.sav"
+filename_age = "frontal-face-detection/age_model.sav"
+
 # -------------models loading------------------------------------------------
 
+@st.cache(allow_output_mutation=True)
+def load_model(model_name):
+    with fs.open(model_name , "rb") as f:
+        loaded_model = pickle.load(f)
+    return loaded_model
 
-fs = s3fs.S3FileSystem(anon=False)
-
-with fs.open("frontal-face-detection/model_gen.sav", 'rb') as f:
-    gender_loaded_model = pickle.load(f)
-with fs.open("frontal-face-detection/emotion_model.sav", 'rb') as f:
-    emotion_loaded_model = pickle.load(f)
-with fs.open("frontal-face-detection/age_model.sav", 'rb') as f:
-    age_predictor = pickle.load(f)
+gender_loaded_model = load_model(filename_gender)
+emotion_loaded_model = load_model(filename_emotion)
+age_predictor = load_model(filename_age)
 
 gender_loaded_model.compile(
     optimizer = 'adam',
@@ -50,7 +58,6 @@ emotion_loaded_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.
 emotion_ranges = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Suprise']
 # Importing the Haar Cascades classifier XML file.
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-
 
 # -------------Function to Detect Faces------------------------------------------------
 
@@ -230,10 +237,6 @@ def create_table():
 def add_feedback(date_submitted, Q1, Q2, Q3, Q4, Q5):
     c.execute('INSERT INTO feedback (date_submitted,Q1, Q2, Q3, Q4, Q5) VALUES (?,?,?,?,?,?)',(date_submitted,Q1, Q2, Q3, Q4, Q5))
     conn.commit()
-
-
-# Set page configs. Get emoji names from WebFx
-st.set_page_config(page_title="Real-time Face Detection", page_icon="./assets/faceman_cropped.png", layout="centered")
 
 # -------------Header Section------------------------------------------------
 
