@@ -239,7 +239,7 @@ def add_feedback(date_submitted, Q1, Q2, Q3, Q4, Q5):
     conn.commit()
 
 # -------------Header Section------------------------------------------------
-
+@st.cache(ttl = 600)
 title = '<p style="text-align: center;font-size: 40px;font-weight: 550; "> Realtime Face Detection</p>'
 st.markdown(title, unsafe_allow_html=True)
 
