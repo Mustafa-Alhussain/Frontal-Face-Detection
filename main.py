@@ -2,6 +2,7 @@
 
 import re
 from io import BytesIO
+from streamlit.web.server.server import SessionInfo
 import ktrain
 import os
 import pandas as pd
