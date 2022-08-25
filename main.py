@@ -24,16 +24,28 @@ import time
 from datetime import datetime
 
 # -------------General Setup------------------------------------------------
+path1 = os.getcwd()
 
 # Set page configs. Get emoji names from WebFx
 st.set_page_config(page_title="Real-time Face Detection", page_icon="./assets/faceman_cropped.png", layout="centered")
 fs = s3fs.S3FileSystem(anon=False)
 #Define Directory for models
-path1 = os.getcwd()
-path = os.path.join(path1 ,"models")
 filename_gender = "frontal-face-detection/model_gen.sav"
 filename_emotion = "frontal-face-detection/emotion_model.sav"
 filename_age = "frontal-face-detection/age_model.sav"
+
+# -------------Offline Model loading------------------------------------------------
+
+#filename = '/Users/sefo7/Desktop/Master/Data_Science_Projects/Robot Face-Detection/models'
+#filename_gender = filename + "/model_gen.sav"
+#filename_emotion = filename + "/emotion_model.sav"
+#filename_age = filename + "/age_model.sav"
+
+#@st.cache(allow_output_mutation=True)
+#def load_model(model_name):
+#    with open(model_name , "rb") as f:
+#        loaded_model = pickle.load(f)
+#    return loaded_model
 
 # -------------models loading------------------------------------------------
 
