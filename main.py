@@ -87,7 +87,7 @@ def shrink_face_roi(x, y, w, h, scale=0.9):
 
 # Defining a function to create the predicted age overlay on the image by centering the text.
 
-
+@st.cache(ttl=600)
 def create_age_text(img, text, pct_text, emotion_text ,  x, y, w, h):
 
     # Defining font, scales and thickness.
