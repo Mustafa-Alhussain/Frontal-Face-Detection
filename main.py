@@ -265,7 +265,11 @@ if choice == "Home":
             imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             results = faceDetection.process(imgRGB)
             if results.detections:
-                num_faces = len(results.detections)
+                try:
+                    num_faces = len(results.detections)
+                except:
+                    num_faces = 0
+                    pass
                 for id, detection in enumerate(results.detections):
                     bboxC = detection.location_data.relative_bounding_box
                     ih, iw, ic = img.shape
@@ -376,14 +380,6 @@ if choice == "Home":
                     pTime = cTime
                     cv2.putText(img, f'FPS: {int(fps)}', (20, 70), cv2.FONT_HERSHEY_PLAIN,
                                 3, (0, 150, 0), 3)
-                    if num_faces == 0:
-                        st.warning("No Face Detected in Image. Make sure your face is visible in the camera with proper lighting.")
-                    elif num_faces == 1:
-                        st.success(
-                                "Only 1 face detected inside the image. Try adjusting minimum object size if we missed anything.")
-                    else:
-                        st.success("Total of " + str(num_faces) + " faces detected inside the image. Try adjusting your position for better detection if we missed anything.")
-
                     return av.VideoFrame.from_ndarray(img, format="bgr24")
 
         webrtc_ctx = webrtc_streamer(
