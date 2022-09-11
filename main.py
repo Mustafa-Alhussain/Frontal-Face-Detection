@@ -55,7 +55,7 @@ print("Loaded Emotion Model from disk")
 age_predictor = load_model(filename_age)
 print("Loaded Age Model from disk")
 
-emotion_ranges = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Suprise']
+emotion_ranges = ['Angry', 'Disgust', 'Fear', 'Happy', 'Normal', 'Sad', 'Suprise']
 gender_ranges = ['Male' , 'Female']
 
 # Importing the Face Detection classifier.
