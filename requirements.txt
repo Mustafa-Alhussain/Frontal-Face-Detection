@@ -2,7 +2,7 @@ av==9.2.0
 ktrain==0.31.7
 mediapipe==0.8.10.1
 numpy==1.22.0
-opencv_contrib_python==4.6.0.66
+opencv_python_headless==4.6.0.66
 pandas==1.4.3
 Pillow==9.2.0
 s3fs==2022.7.1
