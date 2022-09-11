@@ -1,6 +1,3 @@
-#Emotion & Age & Gender detection using facial images
-
-import re
 from io import BytesIO
 import ktrain
 import os
@@ -13,17 +10,17 @@ from PIL import Image
 import streamlit as st
 from tensorflow.keras.models import load_model
 from ktrain import load_predictor
-from tensorflow import keras
 from streamlit_option_menu import option_menu
 import tensorflow as tf
-from keras.models import model_from_json, load_model
-from streamlit_webrtc import webrtc_streamer, RTCConfiguration
+from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
+import mediapipe as mp
 import av
 import pickle
 import time
 from datetime import datetime
 
 # -------------General Setup------------------------------------------------
+
 path1 = os.getcwd()
 
 # Set page configs. Get emoji names from WebFx
@@ -42,167 +39,113 @@ def load_model(model_name):
         loaded_model = pickle.load(f)
     return loaded_model
 
-
-
-# -------------Offline Model loading------------------------------------------------
-
-#path1 = '/Users/sefo7/Desktop/Master/Data_Science_Projects/Face-Detection'
-#filename = '/Users/sefo7/Desktop/Master/Data_Science_Projects/Robot-Face-Detection/models'
-#filename_gender = filename + "/model_gen.sav"
-#filename_emotion = filename + "/emotion_model.sav"
-#filename_age = filename + "/age_model.sav"
-
-#@st.cache(allow_output_mutation=True)
-#def load_model(model_name):
-#    with open(model_name , "rb") as f:
-#        loaded_model = pickle.load(f)
-#    return loaded_model
-
 # -------------models loading------------------------------------------------
 
-
 gender_loaded_model = load_model(filename_gender)
-emotion_loaded_model = load_model(filename_emotion)
-age_predictor = load_model(filename_age)
-
 gender_loaded_model.compile(
     optimizer = 'adam',
     loss='binary_crossentropy',
     metrics=['binary_accuracy'],)
-
+print("Loaded Gender Model from disk")
+emotion_loaded_model = load_model(filename_emotion)
 emotion_loaded_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001, decay=1e-6),
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
+print("Loaded Emotion Model from disk")
+age_predictor = load_model(filename_age)
+print("Loaded Age Model from disk")
+
 emotion_ranges = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Suprise']
-# Importing the Haar Cascades classifier XML file.
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+gender_ranges = ['Male' , 'Female']
 
-# -------------Function to Detect Faces------------------------------------------------
+# Importing the Face Detection classifier.
+mpFaceDetection = mp.solutions.face_detection
+mpDraw = mp.solutions.drawing_utils
+faceDetection = mpFaceDetection.FaceDetection(0.75)
+# -------------Functions to Detect Faces & create texts------------------------------------------------
 
 
-# Defining a function to shrink the detected face region by a scale for better prediction in the model.
-
-
-def shrink_face_roi(x, y, w, h, scale=0.9):
-    wh_multiplier = (1-scale)/2
-    x_new = int(x + (w * wh_multiplier))
-    y_new = int(y + (h * wh_multiplier))
-    w_new = int(w * scale)
-    h_new = int(h * scale)
-    return (x_new, y_new, w_new, h_new)
 
 # Defining a function to create the predicted age overlay on the image by centering the text.
 
-@st.cache(ttl=600)
-def create_age_text(img, text, pct_text, emotion_text ,  x, y, w, h):
+#@st.cache(ttl=600)
+def create_age_text(img, age_text, gender_text, emotion_text ,  x, y, w, h):
 
     # Defining font, scales and thickness.
     fontFace = cv2.FONT_HERSHEY_SIMPLEX
-    text_scale = 0.9
-    yrsold_scale = 0.9
-    pct_text_scale = 0.9
+    age_scale = 0.8
+    emotion_scale = 0.8
+    gender_text_scale = 0.8
 
-    # Getting width, height and baseline of age text and "years old".
-    (text_width, text_height), text_bsln = cv2.getTextSize(text, fontFace=fontFace, fontScale=text_scale, thickness=2)
-    (yrsold_width, yrsold_height), yrsold_bsln = cv2.getTextSize(emotion_text, fontFace=fontFace, fontScale=yrsold_scale, thickness=2)
-    (pct_text_width, pct_text_height), pct_text_bsln = cv2.getTextSize(pct_text, fontFace=fontFace, fontScale=pct_text_scale, thickness=2)
+    # Getting width, height and baseline of age text and emotion text and gender text
+    (age_width, age_height), age_bsln = cv2.getTextSize(age_text, fontFace=fontFace, fontScale=age_scale, thickness=1)
+    (emotion_width, emotion_height), emotion_bsln = cv2.getTextSize(emotion_text, fontFace=fontFace, fontScale=emotion_scale, thickness=1)
+    (gender_text_width, gender_text_height), gender_text_bsln = cv2.getTextSize(gender_text, fontFace=fontFace, fontScale=gender_text_scale, thickness=1)
 
     # Calculating center point coordinates of text background rectangle.
     x_center = x + (w/2)
-    y_pct_text_center = y + h + 20
-    y_text_center = y + h + 48
-    y_yrsold_center = y + h + 75
+    y_gender_text_center = y + h + 20
+    y_age_center = y + h + 48
+    y_emotion_center = y + h + 75
 
     # Calculating bottom left corner coordinates of text based on text size and center point of background rectangle calculated above.
-    x_text_org = int(round(x_center - (text_width / 2)))
-    y_text_org = int(round(y_text_center + (text_height / 2)))
-    x_yrsold_org = int(round(x_center - (yrsold_width / 2)))
-    y_yrsold_org = int(round(y_yrsold_center + (yrsold_height / 2)))
-    x_pct_text_org = int(round(x_center - (pct_text_width / 2)))
-    y_pct_text_org = int(round(y_pct_text_center + (pct_text_height / 2)))
+    x_age_org = int(round(x_center - (age_width / 2)))
+    y_age_org = int(round(y_age_center + (age_height / 2)))
+    x_emotion_org = int(round(x_center - (emotion_width / 2)))
+    y_emotion_org = int(round(y_emotion_center + (emotion_height / 2)))
+    x_gender_text_org = int(round(x_center - (gender_text_width / 2)))
+    y_gender_text_org = int(round(y_gender_text_center + (gender_text_height / 2)))
 
-    face_age_background = cv2.rectangle(img, (x-1, y+h), (x+w+1, y+h+94), (0, 100, 0), cv2.FILLED)
-    face_age_text = cv2.putText(img, text, org=(x_text_org, y_text_org), fontFace=fontFace, fontScale=text_scale, thickness=2, color=(255, 255, 255), lineType=cv2.LINE_AA)
-    yrsold_text = cv2.putText(img, emotion_text, org=(x_yrsold_org, y_yrsold_org), fontFace=fontFace, fontScale=yrsold_scale, thickness=2, color=(255, 255, 255), lineType=cv2.LINE_AA)
-    pct_age_text = cv2.putText(img, pct_text, org=(x_pct_text_org, y_pct_text_org), fontFace=fontFace, fontScale=pct_text_scale, thickness=2, color=(255, 255, 255), lineType=cv2.LINE_AA)
+    face_age_background = cv2.rectangle(img, (x-1, y+h), (x+w+1, y+h+94), (0, 150, 0), cv2.FILLED)
+    face_age_text = cv2.putText(img, age_text, org=(x_age_org, y_age_org), fontFace=fontFace, fontScale=age_scale, thickness=2, color=(255, 255, 255), lineType=cv2.LINE_AA)
+    emotion_text = cv2.putText(img, emotion_text, org=(x_emotion_org, y_emotion_org), fontFace=fontFace, fontScale=emotion_scale, thickness=2, color=(255, 255, 255), lineType=cv2.LINE_AA)
+    pct_age_text = cv2.putText(img, gender_text, org=(x_gender_text_org, y_gender_text_org), fontFace=fontFace, fontScale=gender_text_scale, thickness=2, color=(255, 255, 255), lineType=cv2.LINE_AA)
 
-    return (face_age_background, face_age_text, yrsold_text)
+    return (face_age_background, face_age_text, emotion_text)
 
 # Defining a function to find faces in an image and then classify each found face into three models ranges defined above.
 @st.cache(ttl=600)
-def classify_age(img):
+def model_prediction(img , x , y , w , h):
     # Making a copy of the image for overlay of ages and making a grayscale copy for passing to the loaded model for age classification.
     img_copy = np.copy(img)
-    img_copy2 = np.copy(img)
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    face_roi = img_gray[y:y+h, x:x+w]
+    face_roi = cv2.resize(face_roi, (256, 256))
+    age1 = 'age' + str(id) +'.jpg'
+    cv2.imwrite(age1, face_roi)
+    face_age = str(round(age_predictor.predict_filename(age1)[0]))
+    
+    #Gender prediction
+    face_roi2 = img_copy[y:y+h, x:x+w]
+    face_roi2 = cv2.resize(face_roi2, (256, 256))
+    gender1 = 'gender' + str(id) +'.jpg'
+    cv2.imwrite(gender1, face_roi2)
+    im = Image.open(gender1)
+    ar = np.asarray(im)
+    ar = ar.astype('float32')
+    ar /= 255.0
+    ar = ar.reshape(-1, 256, 256, 3)
+    face_gender = gender_ranges[np.argmax(gender_loaded_model.predict(ar))]
+    
+    #Emotion Prediction
+    face_roi3 = img_gray[y:y+h, x:x+w]
+    face_roi3 = cv2.resize(face_roi3, (48, 48))
+    emotion1 = 'emotion' + str(id) +'.jpg'
+    cv2.imwrite(emotion1, face_roi3)
+    im = Image.open(emotion1)
+    ar = np.asarray(im)
+    ar = ar.astype('float32')
+    ar /= 255.0
+    ar = ar.reshape(-1, 48, 48, 1)
+    face_emotion_pct = emotion_ranges[np.argmax(emotion_loaded_model.predict(ar))]
+    try:
+        os.remove(age1)
+        os.remove(gender1)
+        os.remove(emotion1)
+    except:
+        pass
 
-    # Detecting faces in the image using the face_cascade loaded above and storing their coordinates into a list.
-    faces = face_cascade.detectMultiScale(img_copy,
-                                          scaleFactor=1.3,
-                                          minNeighbors=3,
-                                          minSize=(30, 30))
-
-    num_faces = len(faces)
-    #print(f"{len(faces)} faces found.")
-
-    # Looping through each face found in the image.
-    for i, (x, y, w, h) in enumerate(faces):
-        count = 0
-
-        # Drawing a rectangle around the found face.
-        face_rect = cv2.rectangle(img_copy, (x, y), (x + w, y + h), (0, 100, 0), thickness=2)
-
-        # Predicting the age of the found face using the model loaded above.
-        x2, y2, w2, h2 = shrink_face_roi(x, y, w, h)
-        face_roi = img_gray[y2:y2 + h2, x2:x2 + w2]
-        face_roi = cv2.resize(face_roi, (256, 256))
-        age1 = 'age' + str(i) + '.jpg'
-        cv2.imwrite(age1, face_roi)
-        # face_roi = face_roi.reshape(-1, 256, 256, 1)
-        face_age = str(round(age_predictor.predict_filename(age1)[0]))
-
-        # Gender prediction
-        face_roi2 = img_copy2[y2:y2 + h2, x2:x2 + w2]
-        face_roi2 = cv2.resize(face_roi2, (256, 256))
-        # face_roi2 = face_roi2.reshape(-1, 256, 256, 3)
-        gender1 = 'gender' + str(i) + '.jpg'
-        cv2.imwrite(gender1, face_roi2)
-        im = Image.open(gender1)
-        ar = np.asarray(im)
-        ar = ar.astype('float32')
-        ar /= 255.0
-        ar = ar.reshape(-1, 256, 256, 3)
-        gender = np.round(gender_loaded_model.predict(ar))
-        if gender == 0:
-            gender = 'Male'
-        else:
-            gender = 'Female'
-        face_age_pct = gender
-
-        # Emotion Prediction
-        face_roi3 = img_gray[y2:y2 + h2, x2:x2 + w2]
-        face_roi3 = cv2.resize(face_roi3, (48, 48))
-        emotion1 = 'emotion' + str(i) + '.jpg'
-        cv2.imwrite(emotion1, face_roi3)
-        im = Image.open(emotion1)
-        ar = np.asarray(im)
-        ar = ar.astype('float32')
-        ar /= 255.0
-        ar = ar.reshape(-1, 48, 48, 1)
-        face_emotion_pct = emotion_ranges[np.argmax(emotion_loaded_model.predict(ar))]
-        # Calling the above defined function to create the predicted age overlay on the image.
-        face_age_background, face_age_text, yrsold_text = create_age_text(img_copy, face_age, face_age_pct,
-                                                                          face_emotion_pct, x, y, w, h)
-        try:
-            os.remove(age1)
-            os.remove(gender1)
-            os.remove(emotion1)
-        except:
-            pass
-
-    return img_copy , num_faces
-
-
+    return face_age, face_gender, face_emotion_pct
 
 conn = sqlite3.connect('feedback.db')
 c = conn.cursor()
@@ -215,11 +158,6 @@ def create_table():
 def add_feedback(date_submitted, Q1, Q2, Q3, Q4, Q5):
     c.execute('INSERT INTO feedback (date_submitted,Q1, Q2, Q3, Q4, Q5) VALUES (?,?,?,?,?,?)',(date_submitted,Q1, Q2, Q3, Q4, Q5))
     conn.commit()
-
-def run_query(query1):
-    rows = conn_google.execute(query1, headers=1)
-    rows = rows.fetchall()
-    return rows
 
 # -------------Header Section------------------------------------------------
 title = '<p style="text-align: center;font-size: 40px;font-weight: 550; "> Realtime Face Detection</p>'
@@ -260,19 +198,35 @@ if choice == "Home":
         st.markdown(" ")
 
 # -------------Upload Image Section------------------------------------------------
-
+                
     if page == "Upload Image":
-        
         # You can specify more file types below if you want
         image_file = st.file_uploader("Upload image", type=['jpeg', 'png', 'jpg', 'webp'])
         if image_file is not None:
             # Reading the image from filepath provided above and passing it through the age clasification method defined above.
             image = Image.open(image_file)
-    
             if st.button("Process"):
                 img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-                age_img , num_faces = classify_age(img)
-                imageRGB = cv2.cvtColor(age_img, cv2.COLOR_BGR2RGB)
+                imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                results = faceDetection.process(imgRGB)
+                if results.detections:
+                    num_faces = len(results.detections)
+                    for id, detection in enumerate(results.detections):
+                        bboxC = detection.location_data.relative_bounding_box
+                        ih, iw, ic = img.shape
+                        bbox = int(bboxC.xmin * iw), int(bboxC.ymin * ih), \
+                               int(bboxC.width * iw), int(bboxC.height * ih)
+                        x = int(bboxC.xmin * iw)
+                        y = int(bboxC.ymin * ih)
+                        w = int(bboxC.width * iw)
+                        h = int(bboxC.height * ih)
+                        cv2.rectangle(img, bbox, (0, 150, 0), 2)
+                        try:
+                            face_age, face_gender, face_emotion_pct = model_prediction(img , x ,y ,w, h)
+                        except:
+                            pass
+                        face_age_background, face_age_text, emotion_text = create_age_text(img, face_age, face_gender, face_emotion_pct, x, y, w, h)
+                imageRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 img = Image.fromarray(imageRGB)
                 st.image(img, use_column_width=True)
                 if num_faces == 0:
@@ -308,8 +262,26 @@ if choice == "Home":
         if img_file_buffer is not None:
             image = Image.open(img_file_buffer)
             img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-            age_img , num_faces = classify_age(img)
-            imageRGB = cv2.cvtColor(age_img, cv2.COLOR_BGR2RGB)
+            imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            results = faceDetection.process(imgRGB)
+            if results.detections:
+                num_faces = len(results.detections)
+                for id, detection in enumerate(results.detections):
+                    bboxC = detection.location_data.relative_bounding_box
+                    ih, iw, ic = img.shape
+                    bbox = int(bboxC.xmin * iw), int(bboxC.ymin * ih), \
+                           int(bboxC.width * iw), int(bboxC.height * ih)
+                    x = int(bboxC.xmin * iw)
+                    y = int(bboxC.ymin * ih)
+                    w = int(bboxC.width * iw)
+                    h = int(bboxC.height * ih)
+                    cv2.rectangle(img, bbox, (0, 150, 0), 2)
+                    try:
+                        face_age, face_gender, face_emotion_pct = model_prediction(img , x ,y ,w, h)
+                    except:
+                        pass
+                    face_age_background, face_age_text, emotion_text = create_age_text(img, face_age, face_gender, face_emotion_pct, x, y, w, h)
+            imageRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             img = Image.fromarray(imageRGB)
             st.image(img, use_column_width=True)
             if num_faces == 0:
@@ -337,8 +309,6 @@ if choice == "Home":
                     mime="image/png")
 
 # -------------Webcam Realtime Section------------------------------------------------
-
-
     if page == "Webcam Realtime":
         st.warning("NOTE : In order to use this mode, you need to give webcam access. "
                "After clicking 'Start' , it takes about 10-20 seconds to ready the webcam.")
@@ -346,14 +316,66 @@ if choice == "Home":
         spinner_message = "Wait a sec, getting some things done..."
 
         with st.spinner(spinner_message):
-
+            RTC_CONFIGURATION = RTCConfiguration(
+                {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+            )
+            pTime = 0
+            process_time = 0
+            x_lst = []
+            y_lst = []
+            h_lst = []
+            w_lst = []
+            age_lst = []
+            gender_lst = []
+            emotion_lst = []
             class VideoProcessor:
-
                 def recv(self, frame):
+                    global pTime, process_time, x_lst,y_lst, h_lst , w_lst,age_lst,gender_lst,emotion_lst
                     # convert to numpy array
-                    frame = frame.to_ndarray(format="bgr24")
-                    age_frame , num_faces = classify_age(frame)
-                    frame = av.VideoFrame.from_ndarray(age_frame, format="bgr24")
+                    img = frame.to_ndarray(format="bgr24")
+                    img = cv2.flip(img, 1)
+                    imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                    results = faceDetection.process(imgRGB)
+                    if results.detections:
+                        num_faces = len(results.detections)
+                        for id, detection in enumerate(results.detections):
+                            bboxC = detection.location_data.relative_bounding_box
+                            ih, iw, ic = img.shape
+                            bbox = int(bboxC.xmin * iw), int(bboxC.ymin * ih), \
+                                   int(bboxC.width * iw), int(bboxC.height * ih)
+                            x_lst.append(int(bboxC.xmin * iw))
+                            y_lst.append(int(bboxC.ymin * ih))
+                            w_lst.append(int(bboxC.width * iw))
+                            h_lst.append(int(bboxC.height * ih))
+                            cv2.rectangle(img, bbox, (0, 150, 0), 2)
+                            if process_time % 30 == 0 and process_time != 0:
+                                try:
+                                    face_age, face_gender, face_emotion_pct = model_prediction(img , x_lst[id], y_lst[id], w_lst[id], h_lst[id])
+                                    age_lst.append(face_age)
+                                    gender_lst.append(face_gender)
+                                    emotion_lst.append(face_emotion_pct)
+                                except:
+                                    pass
+                        for i in range(len(x_lst)):
+                            try:
+                                face_age_background, face_age_text, emotion_text = create_age_text(img, age_lst[i], gender_lst[i], emotion_lst[i], x_lst[i], y_lst[i], w_lst[i], h_lst[i])
+                            except:
+                                pass
+                    x_lst.clear()
+                    y_lst.clear()
+                    w_lst.clear()
+                    h_lst.clear()
+                    process_time += 1
+                    if process_time % 30 == 0:
+                        age_lst.clear()
+                        gender_lst.clear()
+                        emotion_lst.clear()
+                    cTime = time.time()
+                    time_difference = cTime - pTime
+                    fps = 1 / time_difference
+                    pTime = cTime
+                    cv2.putText(img, f'FPS: {int(fps)}', (20, 70), cv2.FONT_HERSHEY_PLAIN,
+                                3, (0, 150, 0), 3)
                     if num_faces == 0:
                         st.warning("No Face Detected in Image. Make sure your face is visible in the camera with proper lighting.")
                     elif num_faces == 1:
@@ -362,12 +384,16 @@ if choice == "Home":
                     else:
                         st.success("Total of " + str(num_faces) + " faces detected inside the image. Try adjusting your position for better detection if we missed anything.")
 
-                    return frame
+                    return av.VideoFrame.from_ndarray(img, format="bgr24")
 
-        webrtc_streamer(key="key", video_processor_factory=VideoProcessor,
-                        rtc_configuration=RTCConfiguration(
-                            {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}))
-
+        webrtc_ctx = webrtc_streamer(
+            key="WYH",
+            mode=WebRtcMode.SENDRECV,
+            rtc_configuration=RTC_CONFIGURATION,
+            media_stream_constraints={"video": True, "audio": False},
+            video_processor_factory=VideoProcessor,
+            async_processing=True,
+            )
 # -------------Share your Feedback Section------------------------------------------------
 
 elif choice == "Share your Feedback":
