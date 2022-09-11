@@ -25,14 +25,13 @@ path1 = os.getcwd()
 
 # Set page configs. Get emoji names from WebFx
 st.set_page_config(page_title="Real-time Face Detection", page_icon="./assets/faceman_cropped.png", layout="centered")
-
-
 fs = s3fs.S3FileSystem(anon=False)
 #Define Directory for models
 filename_gender = "frontal-face-detection/model_gen.sav"
 filename_emotion = "frontal-face-detection/emotion_model.sav"
 filename_age = "frontal-face-detection/age_model.sav"
 
+<<<<<<< HEAD
 @st.cache(allow_output_mutation=True)
 def load_model(model_name):
     with fs.open(model_name , "rb") as f:
@@ -41,6 +40,29 @@ def load_model(model_name):
 
 # -------------models loading------------------------------------------------
 
+=======
+# -------------Offline Model loading------------------------------------------------
+
+#filename = '/Users/sefo7/Desktop/Master/Data_Science_Projects/Robot Face-Detection/models'
+#filename_gender = filename + "/model_gen.sav"
+#filename_emotion = filename + "/emotion_model.sav"
+#filename_age = filename + "/age_model.sav"
+
+#@st.cache(allow_output_mutation=True)
+#def load_model(model_name):
+#    with open(model_name , "rb") as f:
+#        loaded_model = pickle.load(f)
+#    return loaded_model
+
+# -------------models loading------------------------------------------------
+
+@st.cache(allow_output_mutation=True)
+def load_model(model_name):
+    with fs.open(model_name , "rb") as f:
+        loaded_model = pickle.load(f)
+    return loaded_model
+
+>>>>>>> parent of a23ae4f (10)
 gender_loaded_model = load_model(filename_gender)
 gender_loaded_model.compile(
     optimizer = 'adam',
@@ -104,8 +126,13 @@ def create_age_text(img, age_text, gender_text, emotion_text ,  x, y, w, h):
     return (face_age_background, face_age_text, emotion_text)
 
 # Defining a function to find faces in an image and then classify each found face into three models ranges defined above.
+<<<<<<< HEAD
 @st.cache(ttl=600)
 def model_prediction(img , x , y , w , h):
+=======
+
+def classify_age(img):
+>>>>>>> parent of a23ae4f (10)
     # Making a copy of the image for overlay of ages and making a grayscale copy for passing to the loaded model for age classification.
     img_copy = np.copy(img)
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -147,8 +174,48 @@ def model_prediction(img , x , y , w , h):
 
     return face_age, face_gender, face_emotion_pct
 
+def change_res(cap, width, height):
+    cap.set(3, width)
+    cap.set(4, height)
+
+# -------------Edit------------------------------------------------
+frames_per_seconds = 10
+my_res = '720p'
+# -------------Edit------------------------------------------------
+
+STD_DIMENSIONS =  {
+    "480p": (640, 480),
+    "720p": (1280, 720),
+    "1080p": (1920, 1080),
+    "4k": (3840, 2160),}
+
+
+def get_dims(cap, res= my_res):
+    width, height = STD_DIMENSIONS["480p"]
+    if res in STD_DIMENSIONS:
+        width,height = STD_DIMENSIONS[res]
+    ## change the current caputre device
+    ## to the resulting resolution
+    change_res(cap, width, height)
+    return width, height
+
+# Video Encoding, might require additional installs
+# Types of Codes: http://www.fourcc.org/codecs.php
+VIDEO_TYPE = {
+    'avi': cv2.VideoWriter_fourcc(*'MP4V'),
+    #'mp4': cv2.VideoWriter_fourcc(*'H264'),
+    'mp4': cv2.VideoWriter_fourcc(*'MP4V'),}
+
+
+def get_video_type(filename):
+    filename, ext = os.path.splitext(filename)
+    if ext in VIDEO_TYPE:
+        return  VIDEO_TYPE[ext]
+    return VIDEO_TYPE['avi']
+
 conn = sqlite3.connect('feedback.db')
 c = conn.cursor()
+
 
 
 def create_table():
