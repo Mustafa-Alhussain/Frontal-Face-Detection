@@ -10,10 +10,8 @@ from PIL import Image
 import streamlit as st
 from tensorflow.keras.models import load_model
 from ktrain import load_predictor
-from tensorflow import keras
 from streamlit_option_menu import option_menu
 import tensorflow as tf
-from keras.models import model_from_json, load_model
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 import mediapipe as mp
 import av
