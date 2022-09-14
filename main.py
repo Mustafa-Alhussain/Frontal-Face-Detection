@@ -4,7 +4,6 @@ import os
 import pandas as pd
 import cv2
 import s3fs
-import sqlite3
 import numpy as np
 from PIL import Image
 import streamlit as st
@@ -147,17 +146,6 @@ def model_prediction(img , x , y , w , h):
 
     return face_age, face_gender, face_emotion_pct
 
-conn = sqlite3.connect('feedback.db')
-c = conn.cursor()
-
-
-def create_table():
-    c.execute('CREATE TABLE IF NOT EXISTS feedback(date_submitted DATE, Q1 TEXT, Q2 INTEGER, Q3 INTEGER, Q4 TEXT, Q5 TEXT)')
-
-
-def add_feedback(date_submitted, Q1, Q2, Q3, Q4, Q5):
-    c.execute('INSERT INTO feedback (date_submitted,Q1, Q2, Q3, Q4, Q5) VALUES (?,?,?,?,?,?)',(date_submitted,Q1, Q2, Q3, Q4, Q5))
-    conn.commit()
 
 # -------------Header Section------------------------------------------------
 title = '<p style="text-align: center;font-size: 40px;font-weight: 550; "> Realtime Face Detection</p>'
@@ -209,8 +197,11 @@ if choice == "Home":
                 img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
                 imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 results = faceDetection.process(imgRGB)
-                if results.detections:
+                try:
                     num_faces = len(results.detections)
+                except:
+                    num_faces = 0
+                if results.detections:
                     for id, detection in enumerate(results.detections):
                         bboxC = detection.location_data.relative_bounding_box
                         ih, iw, ic = img.shape
@@ -264,12 +255,11 @@ if choice == "Home":
             img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
             imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             results = faceDetection.process(imgRGB)
+            try:
+                num_faces = len(results.detections)
+            except:
+                num_faces = 0
             if results.detections:
-                try:
-                    num_faces = len(results.detections)
-                except:
-                    num_faces = 0
-                    pass
                 for id, detection in enumerate(results.detections):
                     bboxC = detection.location_data.relative_bounding_box
                     ih, iw, ic = img.shape
@@ -393,28 +383,7 @@ if choice == "Home":
 # -------------Share your Feedback Section------------------------------------------------
 
 elif choice == "Share your Feedback":
-    st.title("Feedback")
-
-    d = st.date_input("Today's date",None, None, None, None)
-        
-    question_1 = st.selectbox('Which mode have you tried?',('' ,'Upload Image', 'Webcam Image Capture', 'Webcam Realtime' ,'All'))
-    st.write('You selected:', question_1)
-        
-    question_2 = st.slider('How was the overall experience? (10 being very good and 1 being very dissapointed) ', 1, 1,10)
-    st.write('You selected:', question_2) 
-
-    question_3 = st.selectbox('Was the website fun and interactive?',('','Yes', 'No'))
-    st.write('You selected:', question_3)
-
-    question_4 = st.selectbox('Do you have a similar experience of what you tried?',('','Yes', 'No'))
-    st.write('You selected:', question_4)
-
-    question_5 = st.text_input('What could have been better?', max_chars=200)
-
-    if st.button("Submit feedback"):
-        create_table()
-        add_feedback(d, question_1, question_2, question_3, question_4, question_5)
-        st.success("Feedback submitted")
+    st.components.v1.iframe(src = "https://docs.google.com/forms/d/e/1FAIpQLSclCA2nfKxPdfC2NXot2tcQnHpXsNNawu5lIfxxXoXeCn_tag/viewform?embedded=true", width=640, height=1438, scrolling=False)
 
     # About the programmer
     with st.sidebar:
