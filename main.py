@@ -18,14 +18,20 @@ import pickle
 import time
 from datetime import datetime
 
+st.set_page_config(
+    page_title = 'Realtime Face Detection',
+    layout = 'centered', #wide
+    initial_sidebar_state = 'auto', #collapsed, expanded
+    menu_items={
+        'Get Help': 'https://streamlit.io',
+        'Report a bug': 'https://github.com',
+        'About':'About your application: **Realtime Face Detection**'
+    }
+    )
+
 # -------------General Setup------------------------------------------------
 
 path1 = os.getcwd()
-
-# Set page configs. Get emoji names from WebFx
-st.set_page_config(page_title="Real-time Face Detection", page_icon="./assets/faceman_cropped.png", layout="centered")
-
-
 fs = s3fs.S3FileSystem(anon=False)
 #Define Directory for models
 filename_gender = "frontal-face-detection/model_gen.sav"
@@ -38,7 +44,7 @@ def load_model(model_name):
         loaded_model = pickle.load(f)
     return loaded_model
 
-# -------------models loading------------------------------------------------
+# -------------Models loading------------------------------------------------
 
 gender_loaded_model = load_model(filename_gender)
 gender_loaded_model.compile(
@@ -147,43 +153,63 @@ def model_prediction(img , x , y , w , h):
     return face_age, face_gender, face_emotion_pct
 
 
+    
+# -------------Header Section------------------------------------------------
+header = """
+<!DOCTYPE html>
+<html>
+<body>
+    <header>
+        <a href=
+"https://www.geeksforgeeks.org/fundamentals-of-algorithms/">
+        Algo</a> |
+        <a href=
+"https://www.geeksforgeeks.org/data-structures/">
+        DS</a> |
+        <a href=
+"https://www.geeksforgeeks.org/category/program-output/">
+        Languages</a> |
+        <a href=
+"https://www.geeksforgeeks.org/company-interview-corner/">
+        Interview</a> |
+        <a href=
+"https://www.geeksforgeeks.org/student-corner/">
+        Students</a> |
+        <a href=
+"https://www.geeksforgeeks.org/gate-cs-notes-gq/">
+        Gate</a> |
+        <a href=
+"https://www.geeksforgeeks.org/articles-on-computer-science-subjects-gq/">
+        CS Subjects</a> |
+        <a href=
+"https://www.geeksforgeeks.org/quiz-corner-gq/">
+        Quizzes</a>
+    </header>
+</body>
+</html>
+"""
+st.markdown(header,unsafe_allow_html=True)
 # -------------Header Section------------------------------------------------
 title = '<p style="text-align: center;font-size: 40px;font-weight: 550; "> Realtime Face Detection</p>'
 st.markdown(title, unsafe_allow_html=True)
 
-# -------------Sidebar Section------------------------------------------------
-
-with st.sidebar:
-    st.image(os.path.join(path1, "side_image.jpeg"))
-    selected = option_menu(None, ["Home", "Share your Feedback"] , icons=['house', 'search'], menu_icon="cast")
-    choice = selected
+st.image(os.path.join(path1, "HEADER_2.jpg"))
+selected = option_menu(
+    menu_title = None,
+    options = ["Home", "Feedback" , "About" , "Contact Us"],
+    icons=['house', 'chat-dots' , 'info-circle' ,'envelope'], menu_icon="cast",
+           default_index = 0 , orientation = "horizontal")
+choice = selected
 
 # -------------Home Section------------------------------------------------
 
 if choice == "Home":
-    st.markdown(
-    "This website is designed to predict Age, Gender and Emotion using Realtime Face Detection"
-    " Detection. Please share your experience with us in **Share your Feedback section** for improvement.")
-
-    supported_modes = "<html> " \
-                      "<body><div> <b>Supported Face Detection Modes (Change modes from sidebar menu)</b>" \
-                      "<ul><li>Image Upload</li><li>Webcam Image Capture</li><li>Webcam Video Realtime</li></ul>" \
-                      "</div></body></html>"
-    st.markdown(supported_modes, unsafe_allow_html=True)
-    st.warning("NOTE : Click the arrow icon at Top-Left to open Sidebar menu. ")
-    with st.sidebar:
-        page = st.radio("Choose Face Detection Mode", ('Upload Image',  'Webcam Image Capture', 'Webcam Realtime'), index=0)
-        st.info("NOTE: quality of detection will depend on lights, Alignment & Distance to Camera.")
-
-    # About the programmer
-        st.markdown("## Made by **Mustafa Al Hussain**")
-        ("## Email: **Mustafa.alhussain97@gmail.com**")
-        ("[*Linkedin Page*](https://www.linkedin.com/in/mustafa-al-hussain-16026019a)")
-        # line break
-
-        st.markdown(" ")
-        st.markdown(" ")
-        st.markdown(" ")
+    page = st.radio(
+        label = "Choose Face Detection Mode",
+        options=('Upload Image',  'Webcam Image Capture', 'Webcam Realtime'),
+        index=0,
+        horizontal = False)
+    st.info("NOTE: quality of detection will depend on lights, Alignment & Distance to Camera.")
 
 # -------------Upload Image Section------------------------------------------------
                 
@@ -220,13 +246,13 @@ if choice == "Home":
                 imageRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 img = Image.fromarray(imageRGB)
                 st.image(img, use_column_width=True)
-                if num_faces == 0:
-                    st.warning("No Face Detected in Image. Make sure your face is visible in the camera with proper lighting.")
+                if num_faces > 1:
+                    st.success("Total of " + str(num_faces) + " faces detected inside the image. Try adjusting your position for better detection if we missed anything.")
                 elif num_faces == 1:
                     st.success(
                             "Only 1 face detected inside the image. Try adjusting minimum object size if we missed anything.")
                 else:
-                    st.success("Total of " + str(num_faces) + " faces detected inside the image. Try adjusting your position for better detection if we missed anything.")
+                    st.warning("No Face Detected in Image. Make sure your face is visible in the camera with proper lighting.")
                 img = np.array(img)
                 img = Image.fromarray(img)
                 buffered = BytesIO()
@@ -278,13 +304,13 @@ if choice == "Home":
             imageRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             img = Image.fromarray(imageRGB)
             st.image(img, use_column_width=True)
-            if num_faces == 0:
-                st.warning("No Face Detected in Image. Make sure your face is visible in the camera with proper lighting.")
+            if num_faces >= 1:
+                st.success("Total of " + str(num_faces) + " faces detected inside the image. Try adjusting your position for better detection if we missed anything.")
             elif num_faces == 1:
                 st.success(
                         "Only 1 face detected inside the image. Try adjusting minimum object size if we missed anything.")
             else:
-                st.success("Total of " + str(num_faces) + " faces detected inside the image. Try adjusting your position for better detection if we missed anything.")
+                st.warning("No Face Detected in Image. Make sure your face is visible in the camera with proper lighting.")
             img = np.array(img)
             img = Image.fromarray(img)
             buffered = BytesIO()
@@ -331,7 +357,6 @@ if choice == "Home":
                     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                     results = faceDetection.process(imgRGB)
                     if results.detections:
-                        num_faces = len(results.detections)
                         for id, detection in enumerate(results.detections):
                             bboxC = detection.location_data.relative_bounding_box
                             ih, iw, ic = img.shape
@@ -380,23 +405,67 @@ if choice == "Home":
             video_processor_factory=VideoProcessor,
             async_processing=True,
             )
-# -------------Share your Feedback Section------------------------------------------------
+# -------------Feedback Section------------------------------------------------
 
-elif choice == "Share your Feedback":
+elif choice == "Feedback":
+
     st.components.v1.iframe(src = "https://docs.google.com/forms/d/e/1FAIpQLSclCA2nfKxPdfC2NXot2tcQnHpXsNNawu5lIfxxXoXeCn_tag/viewform?embedded=true", width=640, height=1438, scrolling=False)
 
-    # About the programmer
-    with st.sidebar:
-        st.markdown("## Made by **Mustafa Al Hussain**")
-        ("## Email: **Mustafa.alhussain97@gmail.com**")
-        ("[**Linkedin Page**](https://www.linkedin.com/in/mustafa-al-hussain-16026019a)")
+# -------------About Section------------------------------------------------
 
+elif choice == "About":
+
+    st.components.v1.iframe(src = "https://docs.google.com/forms/d/e/1FAIpQLSclCA2nfKxPdfC2NXot2tcQnHpXsNNawu5lIfxxXoXeCn_tag/viewform?embedded=true", width=640, height=1438, scrolling=False)
+
+# -------------About Section------------------------------------------------
+
+elif choice == "Contact Us":
+    js = "window.open('https://linktr.ee/zeronex?utm_source=linktree_profile_share&ltsid=b4104f6e-d7b6-4602-8dc6-e0f416c54976')"  # New tab or window
+    #js = "window.location.href = 'https://linktr.ee/zeronex?utm_source=linktree_profile_share&ltsid=b4104f6e-d7b6-4602-8dc6-e0f416c54976'"  # Current tab
+    html = '<img src onerror="{}">'.format(js)
+    div = Div(text=html)
+    st.bokeh_chart(div)
+# -------------Footer Section------------------------------------------------
+
+footer="""<style>
+a:link , a:visited{
+color: blue;
+background-color: transparent;
+text-decoration: underline;
+}
+
+a:hover,  a:active {
+color: red;
+background-color: transparent;
+text-decoration: underline;
+}
+
+.footer {
+position: fixed;
+left: 0;
+bottom: 0;
+width: 100%;
+background-color: white;
+color: black;
+text-align: center;
+}
+</style>
+<div class="footer">
+<p>Developed by <a style='display: block; text-align: center;' href="https://linktr.ee/zeronex?utm_source=linktree_profile_share&ltsid=b4104f6e-d7b6-4602-8dc6-e0f416c54976" target="_blank">Mustafa Al Hussain</a></p>
+</div>
+"""
+st.markdown(footer,unsafe_allow_html=True)
 # -------------Hide Streamlit Watermark------------------------------------------------
 
-hide_streamlit_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+hide_footer_style = '''
+<style>
+.reportview-container .main footer {visibility: hidden;}
+'''
+st.markdown(hide_footer_style, unsafe_allow_html=True)
+
+
+hide_menu_style = '''
+<style>
+#MainMenu {visibility: hidden;}
+'''
+st.markdown(hide_menu_style, unsafe_allow_html=True)
