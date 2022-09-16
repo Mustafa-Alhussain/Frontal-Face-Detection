@@ -3,10 +3,10 @@ import ktrain
 import os
 import pandas as pd
 import cv2
-import s3fs
 import numpy as np
 from PIL import Image
 import streamlit as st
+import gcsfs
 from tensorflow.keras.models import load_model
 from ktrain import load_predictor
 from streamlit_option_menu import option_menu
@@ -33,15 +33,19 @@ st.set_page_config(
 # -------------General Setup------------------------------------------------
 
 path1 = os.getcwd()
-fs = s3fs.S3FileSystem(anon=False)
-#Define Directory for models
-filename_gender = "frontal-face-detection/model_gen.sav"
-filename_emotion = "frontal-face-detection/emotion_model.sav"
-filename_age = "frontal-face-detection/age_model.sav"
+
+#Define Google Cloud Directory for models
+filename_gender = "gs://streamlit-face-detection/emotion_model.sav"
+filename_emotion = "gs://streamlit-face-detection/model_gen.sav"
+filename_age = "gs://streamlit-face-detection/age_model.sav"
+
+FS = gcsfs.GCSFileSystem(
+    project= st.secrets["gcp_service_account"],
+    token= st.secrets["gcp_service_account"])
 
 @st.cache(allow_output_mutation=True)
-def load_model(model_name):
-    with fs.open(model_name , "rb") as f:
+def load_model(model_path):
+    with FS.open(model_path , "rb") as f:
         loaded_model = pickle.load(f)
     return loaded_model
 

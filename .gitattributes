@@ -1,9 +1,0 @@
-*.h5 filter=lfs diff=lfs merge=lfs -text
-*.sav filter=lfs diff=lfs merge=lfs -text
-*/models filter=lfs diff=lfs merge=lfs -text
-*models/ filter=lfs diff=lfs merge=lfs -text
-*model* filter=lfs diff=lfs merge=lfs -text
-age_model filter=lfs diff=lfs merge=lfs -text
-*emotion_model filter=lfs diff=lfs merge=lfs -text
-*age_model filter=lfs diff=lfs merge=lfs -text
-*model_gen filter=lfs diff=lfs merge=lfs -text
