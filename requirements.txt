@@ -7,7 +7,7 @@ numpy==1.22.0
 opencv-python-headless==4.6.0.66
 pandas==1.4.3
 Pillow==9.2.0
-s3fs==2022.7.1
+gcsfs==2022.8.2
 streamlit==1.12.2
 streamlit_option_menu==0.3.2
 streamlit_webrtc==0.43.4
