@@ -398,6 +398,7 @@ elif choice == "About":
     flow1 = st.image(os.path.join(path1, "Flow2.png"))
     flow2 = st.image(os.path.join(path1, "Flow3.png"))
     flow3 = st.image(os.path.join(path1, "Flow4.png"))
+    flow4 = st.image(os.path.join(path1, "Flow5.png"))
     Objectives = "<html> " \
                       "<body><div><b>Objectives:</b>" \
                       "<ul><li>Detect Faces</li><li>Estimate ages</li><li>Classify gender</li><li>Predict emotion state<li>Display the results</li></li></ul>" \
