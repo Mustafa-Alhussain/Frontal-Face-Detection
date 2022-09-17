@@ -394,7 +394,7 @@ elif choice == "About":
         While in primitive methods filters are hand-engineered, with enough training, CNN have the \
         ability to learn these filters/characteristics. In this project, there will be multiple models \
         used for prediction.")
-    flow = st.image(os.path.join(path1, "Flow.png"))
+    flow = st.image(os.path.join(path1, "Flow1.png"))
     Objectives = "<html> " \
                       "<body><div><b>Objectives:</b>" \
                       "<ul><li>Detect Faces</li><li>Estimate ages</li><li>Classify gender</li><li>Predict emotion state<li>Display the results</li></li></ul>" \
