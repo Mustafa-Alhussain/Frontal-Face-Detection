@@ -372,7 +372,7 @@ if choice == "Home":
 
 elif choice == "Feedback":
 
-    st.components.v1.iframe(src = "https://docs.google.com/forms/d/e/1FAIpQLSclCA2nfKxPdfC2NXot2tcQnHpXsNNawu5lIfxxXoXeCn_tag/viewform?embedded=true", height = 1438, scrolling=False)
+    st.components.v1.iframe(src = "https://docs.google.com/forms/d/e/1FAIpQLSclCA2nfKxPdfC2NXot2tcQnHpXsNNawu5lIfxxXoXeCn_tag/viewform?embedded=true", height = 1684, scrolling=False)
 
 # -------------About Section------------------------------------------------
 
