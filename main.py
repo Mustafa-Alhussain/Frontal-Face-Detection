@@ -399,10 +399,10 @@ elif choice == "About":
                       "</div></body></html>"
     st.markdown(Objectives, unsafe_allow_html=True)
     supported_modes = "<html> " \
-                      "<body><div> <b>Supported Face Detection Modes (Change modes from sidebar menu)</b>" \
-                      "<ul><li>Image Upload: upload any image from your phone our computer to process the image.</li> \
-                      <li>Webcam Image Capture: use your camera to capture a live image to get processed through the models.</li> \
-                      <li>Webcam Video Realtime: by using your phone or computer camera to capture live video and process it in real time to see the actual results in the video</li></ul>" \
+                      "<body><div><b>Supported Face Detection Modes</b>" \
+                      "<ul><li><b>Image Upload:</b> upload any image from your phone our computer to process the image.</li> \
+                      <li><b>Webcam Image Capture:</b> use your camera to capture a live image to get processed through the models.</li> \
+                      <li><b>Webcam Video Realtime:</b> by using your phone or computer camera to capture live video and process it in real time to see the actual results in the video</li></ul>" \
                       "</div></body></html>"
     st.markdown(supported_modes, unsafe_allow_html=True)
 
