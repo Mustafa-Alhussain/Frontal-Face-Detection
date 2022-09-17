@@ -158,42 +158,6 @@ def model_prediction(img , x , y , w , h):
     return face_age, face_gender, face_emotion_pct
 
 
-    
-# -------------Header Section------------------------------------------------
-header = """
-<!DOCTYPE html>
-<html>
-<body>
-    <header>
-        <a href=
-"https://www.geeksforgeeks.org/fundamentals-of-algorithms/">
-        Algo</a> |
-        <a href=
-"https://www.geeksforgeeks.org/data-structures/">
-        DS</a> |
-        <a href=
-"https://www.geeksforgeeks.org/category/program-output/">
-        Languages</a> |
-        <a href=
-"https://www.geeksforgeeks.org/company-interview-corner/">
-        Interview</a> |
-        <a href=
-"https://www.geeksforgeeks.org/student-corner/">
-        Students</a> |
-        <a href=
-"https://www.geeksforgeeks.org/gate-cs-notes-gq/">
-        Gate</a> |
-        <a href=
-"https://www.geeksforgeeks.org/articles-on-computer-science-subjects-gq/">
-        CS Subjects</a> |
-        <a href=
-"https://www.geeksforgeeks.org/quiz-corner-gq/">
-        Quizzes</a>
-    </header>
-</body>
-</html>
-"""
-st.markdown(header,unsafe_allow_html=True)
 # -------------Header Section------------------------------------------------
 title = '<p style="text-align: center;font-size: 40px;font-weight: 550; "> Realtime Face Detection</p>'
 st.markdown(title, unsafe_allow_html=True)
@@ -414,13 +378,39 @@ if choice == "Home":
 
 elif choice == "Feedback":
 
-    st.components.v1.iframe(src = "https://docs.google.com/forms/d/e/1FAIpQLSclCA2nfKxPdfC2NXot2tcQnHpXsNNawu5lIfxxXoXeCn_tag/viewform?embedded=true", width=640, height=1438, scrolling=False)
+    st.components.v1.iframe(src = "https://docs.google.com/forms/d/e/1FAIpQLSclCA2nfKxPdfC2NXot2tcQnHpXsNNawu5lIfxxXoXeCn_tag/viewform?embedded=true", height = 1438, scrolling=False)
 
 # -------------About Section------------------------------------------------
 
 elif choice == "About":
-
-    st.components.v1.iframe(src = "https://docs.google.com/forms/d/e/1FAIpQLSclCA2nfKxPdfC2NXot2tcQnHpXsNNawu5lIfxxXoXeCn_tag/viewform?embedded=true", width=640, height=1438, scrolling=False)
+    Project = "<html> " \
+                      "<body><div> <b>About the Project:</b>" \
+                      "</div></body></html>"
+    Works = "<html> " \
+                  "<body><div> <b>How it Works:</b>" \
+                  "</div></body></html>"
+    st.markdown(Project, unsafe_allow_html = True)
+    st.markdown("This website to present you with our artificial intelligence and machine learning models that have capabilities of computer vision for image and video processing to get (faces detection, gender detection, age estimation and facial emotions detection)")
+    st.markdown(Works, unsafe_allow_html = True)
+    st.markdown(
+        "A Convolutional Neural Network is our main algorithm in this project. It mainly takes in an \
+        input image, assign importance (learnable weights and biases) to various objects in the image.\
+        The pre-processing part is less required in CNN compared to other classification algorithms.\
+        While in primitive methods filters are hand-engineered, with enough training, CNN have the \
+        ability to learn these filters/characteristics. In this project, there will be multiple models \
+        used for prediction.")
+    Objectives = "<html> " \
+                      "<body><div> <b>Objectives:</b>" \
+                      "<ul><li>Detect Faces</li><li>Estimate ages</li><li>Classify gender</li><li>Predict emotion state<li>Display the results</li></li></ul>" \
+                      "</div></body></html>"
+    st.markdown(Objectives, unsafe_allow_html=True)
+    supported_modes = "<html> " \
+                      "<body><div> <b>Supported Face Detection Modes (Change modes from sidebar menu)</b>" \
+                      "<ul><li>Image Upload: upload any image from your phone our computer to process the image.</li> \
+                      <li>Webcam Image Capture: use your camera to capture a live image to get processed through the models.</li> \
+                      <li>Webcam Video Realtime: by using your phone or computer camera to capture live video and process it in real time to see the actual results in the video</li></ul>" \
+                      "</div></body></html>"
+    st.markdown(supported_modes, unsafe_allow_html=True)
 
 # -------------About Section------------------------------------------------
 
@@ -430,36 +420,7 @@ elif choice == "Contact Us":
     html = '<img src onerror="{}">'.format(js)
     div = Div(text=html)
     st.bokeh_chart(div)
-# -------------Footer Section------------------------------------------------
 
-footer="""<style>
-a:link , a:visited{
-color: blue;
-background-color: transparent;
-text-decoration: underline;
-}
-
-a:hover,  a:active {
-color: red;
-background-color: transparent;
-text-decoration: underline;
-}
-
-.footer {
-position: fixed;
-left: 0;
-bottom: 0;
-width: 100%;
-background-color: white;
-color: black;
-text-align: center;
-}
-</style>
-<div class="footer">
-<p>Developed by <a style='display: block; text-align: center;' href="https://linktr.ee/zeronex?utm_source=linktree_profile_share&ltsid=b4104f6e-d7b6-4602-8dc6-e0f416c54976" target="_blank">Mustafa Al Hussain</a></p>
-</div>
-"""
-st.markdown(footer,unsafe_allow_html=True)
 # -------------Hide Streamlit Watermark------------------------------------------------
 
 hide_footer_style = '''
