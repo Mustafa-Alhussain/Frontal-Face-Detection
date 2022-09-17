@@ -159,8 +159,6 @@ def model_prediction(img , x , y , w , h):
 
 
 # -------------Header Section------------------------------------------------
-title = '<p style="text-align: center;font-size: 40px;font-weight: 550; "> Realtime Face Detection</p>'
-st.markdown(title, unsafe_allow_html=True)
 
 st.image(os.path.join(path1, "HEADER_2.jpg"))
 selected = option_menu(
@@ -173,6 +171,8 @@ choice = selected
 # -------------Home Section------------------------------------------------
 
 if choice == "Home":
+    title = '<p style="text-align: center;font-size: 40px;font-weight: 550; "> Realtime Face Detection</p>'
+    st.markdown(title, unsafe_allow_html=True)
     page = st.radio(
         label = "Choose Face Detection Mode",
         options=('Upload Image',  'Webcam Image Capture', 'Webcam Realtime'),
@@ -394,7 +394,7 @@ elif choice == "About":
         ability to learn these filters/characteristics. In this project, there will be multiple models \
         used for prediction.")
     Objectives = "<html> " \
-                      "<body><div> <b>Objectives:</b>" \
+                      "<body><div><b>Objectives:</b>" \
                       "<ul><li>Detect Faces</li><li>Estimate ages</li><li>Classify gender</li><li>Predict emotion state<li>Display the results</li></li></ul>" \
                       "</div></body></html>"
     st.markdown(Objectives, unsafe_allow_html=True)
