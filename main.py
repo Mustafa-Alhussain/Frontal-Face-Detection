@@ -388,12 +388,16 @@ elif choice == "About":
     st.markdown("This website to present you with our artificial intelligence and machine learning models that have capabilities of computer vision for image and video processing to get (faces detection, gender detection, age estimation and facial emotions detection)")
     st.markdown(Works, unsafe_allow_html = True)
     st.markdown(
-        "A Convolutional Neural Network is our main algorithm in this project. It mainly takes in an \
+        "A Convolutional Neural Network (CNN) is our main algorithm in this project. It mainly takes in an \
         input image, assign importance (learnable weights and biases) to various objects in the image.\
         The pre-processing part is less required in CNN compared to other classification algorithms.\
         While in primitive methods filters are hand-engineered, with enough training, CNN have the \
         ability to learn these filters/characteristics. In this project, there will be multiple models \
         used for prediction.")
+    flow0 = st.image(os.path.join(path1, "Flow.png"))
+    flow1 = st.image(os.path.join(path1, "Flow2.png"))
+    flow2 = st.image(os.path.join(path1, "Flow3.png"))
+    flow3 = st.image(os.path.join(path1, "Flow4.png"))
     Objectives = "<html> " \
                       "<body><div><b>Objectives:</b>" \
                       "<ul><li>Detect Faces</li><li>Estimate ages</li><li>Classify gender</li><li>Predict emotion state<li>Display the results</li></li></ul>" \
