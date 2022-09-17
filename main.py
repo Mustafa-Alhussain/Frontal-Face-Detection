@@ -35,8 +35,8 @@ st.set_page_config(
 path1 = os.getcwd()
 
 #Define Google Cloud Directory for models
-filename_gender = "gs://streamlit-face-detection/emotion_model.sav"
-filename_emotion = "gs://streamlit-face-detection/model_gen.sav"
+filename_emotion = "gs://streamlit-face-detection/emotion_model.sav"
+filename_gender = "gs://streamlit-face-detection/model_gen.sav"
 filename_age = "gs://streamlit-face-detection/age_model.sav"
 
 FS = gcsfs.GCSFileSystem(
@@ -207,10 +207,7 @@ if choice == "Home":
                         w = int(bboxC.width * iw)
                         h = int(bboxC.height * ih)
                         cv2.rectangle(img, bbox, (0, 150, 0), 2)
-                        try:
-                            face_age, face_gender, face_emotion_pct = model_prediction(img , x ,y ,w, h)
-                        except:
-                            pass
+                        face_age, face_gender, face_emotion_pct = model_prediction(img , x ,y ,w, h)
                         face_age_background, face_age_text, emotion_text = create_age_text(img, face_age, face_gender, face_emotion_pct, x, y, w, h)
                 imageRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 img = Image.fromarray(imageRGB)
@@ -265,10 +262,7 @@ if choice == "Home":
                     w = int(bboxC.width * iw)
                     h = int(bboxC.height * ih)
                     cv2.rectangle(img, bbox, (0, 150, 0), 2)
-                    try:
-                        face_age, face_gender, face_emotion_pct = model_prediction(img , x ,y ,w, h)
-                    except:
-                        pass
+                    face_age, face_gender, face_emotion_pct = model_prediction(img , x ,y ,w, h)
                     face_age_background, face_age_text, emotion_text = create_age_text(img, face_age, face_gender, face_emotion_pct, x, y, w, h)
             imageRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             img = Image.fromarray(imageRGB)
