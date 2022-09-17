@@ -173,13 +173,13 @@ choice = selected
 if choice == "Home":
     title = '<p style="text-align: center;font-size: 40px;font-weight: 550; "> Realtime Face Detection</p>'
     st.markdown(title, unsafe_allow_html=True)
-    st.warning("For your privacy, All Images processed online & not shared with us.")
     page = st.radio(
         label = "Choose Face Detection Mode",
         options=('Upload Image',  'Webcam Image Capture', 'Webcam Realtime'),
         index=0,
         horizontal = False)
     st.info("NOTE: quality of detection will depend on lights, Alignment & Distance to Camera.")
+    st.warning("For your privacy, All Images processed online & not shared with us.")
 
 # -------------Upload Image Section------------------------------------------------
                 
