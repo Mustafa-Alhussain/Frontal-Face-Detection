@@ -21,7 +21,7 @@ from datetime import datetime
 
 st.set_page_config(
     page_title = 'Realtime Face Detection',
-    layout = 'centered', #wide
+    layout = 'wide', #centered
     initial_sidebar_state = 'auto', #collapsed, expanded
     menu_items={
         'Get Help': 'https://streamlit.io',
