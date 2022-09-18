@@ -66,7 +66,6 @@ age_predictor = load_model(filename_age)
 print("Loaded Age Model from disk")
 
 emotion_ranges = ['Angry', 'Disgust', 'Fear', 'Happy', 'Normal', 'Sad', 'Suprise']
-gender_ranges = ['Male' , 'Female']
 
 # Importing the Face Detection classifier.
 mpFaceDetection = mp.solutions.face_detection
@@ -135,7 +134,11 @@ def model_prediction(img , x , y , w , h):
     ar = ar.astype('float32')
     ar /= 255.0
     ar = ar.reshape(-1, 256, 256, 3)
-    face_gender = gender_ranges[np.argmax(gender_loaded_model.predict(ar))]
+    face_gender = int(np.round(gender_loaded_model.predict(ar)))
+    if face_gender == 0:
+        face_gender = "Male"
+    else:
+        face_gender = 'Female'
     
     #Emotion Prediction
     face_roi3 = img_gray[y:y+h, x:x+w]
